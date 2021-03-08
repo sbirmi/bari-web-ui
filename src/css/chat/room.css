@@ -1,0 +1,13 @@
+.chat_outer_table {
+   background-color: lightblue;
+   width: 500px;
+   border: 2px;
+}
+
+.chat_outer_table_r0 {
+   background-color: red;
+}
+
+.chat_outer_table_r1 {
+   background-color: blue;
+}
