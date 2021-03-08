@@ -28,7 +28,7 @@ class ChatRoom extends Ui {
    +---------------------------------------------------------------+
 
 */
-      this.outer_table = new Table(this.div, 2, 1, "chatOuterTable");
+      this.outer_table = new Table(this.div, 2, 1, "chat_outer_table");
       this.outer_table.cell_class(0, 0, "chat_outer_table_r0");
       this.outer_table.cell_class(1, 0, "chat_outer_table_r1");
 

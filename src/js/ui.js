@@ -10,10 +10,17 @@ class Ui {
 
 // Helpers
 
-function createSpan(txt) {
-   var span = document.createElement("span");
-   span.innerHTML = txt;
-   return span;
+function clearContents(ele) {
+   while (ele.firstChild) {
+      ele.removeChild(ele.firstChild);
+   }
+}
+
+function createSpan(txt, cls=null) {
+   var ele = document.createElement("span");
+   ele.innerHTML = txt;
+   if (cls) { ele.className = cls; }
+   return ele;
 }
 
 function createTextInput(creator, id) {
@@ -23,7 +30,7 @@ function createTextInput(creator, id) {
    return ele;
 }
 
-function createButton(creator, id, value, clickcb="") {
+function createButton(creator, id, value, clickcb="", cls="") {
    // How is onclick registered?
    var ele = document.createElement("input");
    ele.type = "button";
@@ -31,6 +38,17 @@ function createButton(creator, id, value, clickcb="") {
    ele.id = id;
    ele.value = value;
    ele.onclick = clickcb;
+   if (cls) { ele.className = cls; }
+   return ele;
+}
+
+function createLink(link, body, blank=false) {
+   var ele = document.createElement("a");
+   ele.href = link;
+   ele.appendChild(body);
+   if (blank) {
+      ele.target = "_blank";
+   }
    return ele;
 }
 
@@ -73,9 +91,12 @@ class Table {
    }
 
    // Mutators
-   add_row(data) {
+   add_row(data, pos=null) {
       // data is an array of HTML nodes
-      var row = document.createElement('tr');
+      if (pos == null) {
+         pos = this.tbody.childElementCount;
+      }
+      var row = this.tbody.insertRow(pos);
       if (data) {
          for (var c=0; c < data.length; ++c) {
             var cell = document.createElement('td');
@@ -88,8 +109,6 @@ class Table {
             row.appendChild(cell);
          }
       }
-
-      this.tbody.appendChild(row);
       return row;
    }
 
