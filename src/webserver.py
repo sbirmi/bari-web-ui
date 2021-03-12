@@ -21,9 +21,10 @@ def after_request(response):
 
 # -------------------------------------
 # static files
-jsFiles = glob.glob("./js" + "/**/*.js", recursive=True)
-cssFiles = glob.glob("./css" + "/**/*.css", recursive=True)
-assetFiles = glob.glob("./assets" + "/**/*.png", recursive=True)
+jsFiles = set(glob.glob("./js" + "/**/*.js", recursive=True))
+cssFiles = set(glob.glob("./css" + "/**/*.css", recursive=True))
+assetFiles = set(glob.glob("./assets" + "/**/*.png", recursive=True)) | \
+             set(glob.glob("./assets" + "/**/*.svg", recursive=True))
 
 @app.route("/js/<path:jspath>")
 def serveJs(jspath):
@@ -52,6 +53,14 @@ def serveAsset(apath):
 def serveLobby():
     return render_template("lobby.html")
 
+# -------------------------------------
+# Chat room
 @app.route("/chat/<int:gid>")
 def serveChat(gid):
     return render_template("chat/index.html", gid=gid)
+
+# -------------------------------------
+# Dirty7 room
+@app.route("/dirty7/<int:gid>")
+def serveDirty7(gid):
+    return render_template("dirty7/index.html", gid=gid)

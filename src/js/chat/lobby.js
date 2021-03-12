@@ -30,7 +30,7 @@ class ChatLobby extends Ui {
       super(div);
       this.gname = "chat";
       this.nw = new Network("NwChatLobby", "lobby", this.onmessage);
-      this.nw.cls_chatlobby = this;
+      this.nw.cls_lobby = this;
 
       this.gid_to_row = {};
 
@@ -42,7 +42,7 @@ class ChatLobby extends Ui {
       this.outer_table.cell_content_add(0, 0, createSpan("Chat Lobby"));
 
       // Host table
-      this.host_table = new Table(this.outer_table.cell(1, 0), 1, 2, "chatlobby_host_table");
+      this.host_table = new Table(this.outer_table.cell(1, 0), 1, 2, "width100");
       this.host_table.cell_content_add(0, 0, createSpan("Start a new room", "head2"));
       this.host_table.cell_class(0, 1, "right");
       this.host_btn = createButton(this, "chatlobby_host_btn", "host", this.host_click, "text");
@@ -58,25 +58,25 @@ class ChatLobby extends Ui {
       var cell = row.childNodes[0];
       clearContents(cell);
 
-      var a = createLink("/chat/" + gid, createSpan("chat:" + gid, "text"), true);
+      var a = createLink("/chat/" + gid, createSpan("Chat:" + gid, "text"), true);
       cell.appendChild(a);
       cell.appendChild(createSpan(" (" + rcvd_status["clients"] + " clients)", "text"));
    }
    onmessage(obj) {
       // this = Network instance
-      var chatlobby = this.cls_chatlobby;
+      var lobby = this.cls_lobby;
       if (obj[0] == "GAME-STATUS") {
-         if (obj[1].startsWith(chatlobby.gname + ":")) {
+         if (obj[1].startsWith(lobby.gname + ":")) {
             var gid = Number(obj[1].split(/:/)[ 1 ]);
-            if (gid in chatlobby.gid_to_row) {
+            if (gid in lobby.gid_to_row) {
                // Update existing row
-               var row = chatlobby.gid_to_row[gid];
+               var row = lobby.gid_to_row[gid];
             } else {
                // Add a new row
-               var row = chatlobby.existing_table.add_row(null, 1);
-               chatlobby.gid_to_row[gid] = row;
+               var row = lobby.existing_table.add_row(null, 1);
+               lobby.gid_to_row[gid] = row;
             }
-            chatlobby.update_row(row, gid, obj[2]);
+            lobby.update_row(row, gid, obj[2]);
          }
       } else {
          console.log("UNHANDLED MESSAGE");
@@ -84,9 +84,9 @@ class ChatLobby extends Ui {
       }
    }
    host_click(ev) {
-      var chatlobby = ev.target.creator;
+      var lobby = ev.target.creator;
       var msg = ["HOST", "chat"];
-      chatlobby.nw.send(msg);
+      lobby.nw.send(msg);
    }
 }
 

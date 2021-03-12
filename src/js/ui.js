@@ -16,18 +16,8 @@ function clearContents(ele) {
    }
 }
 
-function createSpan(txt, cls=null) {
-   var ele = document.createElement("span");
-   ele.innerHTML = txt;
-   if (cls) { ele.className = cls; }
-   return ele;
-}
-
-function createTextInput(creator, id) {
-   var ele = document.createElement("input");
-   ele.creator = creator;
-   ele.id = id;
-   return ele;
+function createLineBreak() {
+   return document.createElement("br");
 }
 
 function createButton(creator, id, value, clickcb="", cls="") {
@@ -42,6 +32,61 @@ function createButton(creator, id, value, clickcb="", cls="") {
    return ele;
 }
 
+function createDiv(creator, id, cls="") {
+   var ele = document.createElement("div");
+   ele.creator = creator;
+   ele.className = cls;
+   return ele;
+}
+
+function createDropDown(creator, id, values, def_value, cls="") {
+   var ele = document.createElement("select");
+   ele.creator = creator;
+   ele.id = id;
+
+   for (const val of values) {
+      var option = document.createElement("option");
+      option.value = val;
+      option.text = val;
+      ele.appendChild(option);
+   }
+
+   if (def_value != null) {
+      ele.value = def_value;
+   }
+
+   if (cls) { ele.className = cls; }
+   return ele;
+}
+
+function createImg(creator, src, cls="") {
+   var ele = document.createElement("img");
+   ele.creator = creator;
+   ele.src = src;
+
+   if (cls) { ele.className = cls; }
+   return ele;
+}
+
+function createInputPassword(creator, id, cls="") {
+   var ele = document.createElement("input");
+   ele.creator = creator;
+   ele.id = id;
+   ele.type = "password";
+
+   if (cls) { ele.className = cls; }
+   return ele;
+}
+
+function createInputText(creator, id, cls="") {
+   var ele = document.createElement("input");
+   ele.creator = creator;
+   ele.id = id;
+
+   if (cls) { ele.className = cls; }
+   return ele;
+}
+
 function createLink(link, body, blank=false) {
    var ele = document.createElement("a");
    ele.href = link;
@@ -49,6 +94,17 @@ function createLink(link, body, blank=false) {
    if (blank) {
       ele.target = "_blank";
    }
+   return ele;
+}
+
+function createSpan(txt_or_ele, cls=null) {
+   var ele = document.createElement("span");
+   if (typeof txt_or_ele === "string") {
+      ele.innerHTML = txt_or_ele;
+   } else {
+      ele.appendChild(txt_or_ele);
+   }
+   if (cls) { ele.className = cls; }
    return ele;
 }
 

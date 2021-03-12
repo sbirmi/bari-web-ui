@@ -1,6 +1,14 @@
+/* Alignments */
+
 .right {
    text-align: right;
 }
+
+.top {
+   vertical-align: top;
+}
+
+/* Fonts */
 
 .head1 {
    font-size: 24px;
@@ -15,3 +23,15 @@
 .text {
    font-size: 20px;
 }
+
+/* Sizing and position */
+
+.width100 {
+   width: 100%;
+   border: 1px;
+}
+
+.floatleft {
+   float: left;
+}
+

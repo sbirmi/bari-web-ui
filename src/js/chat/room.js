@@ -5,7 +5,7 @@ class ChatRoom extends Ui {
       super(div);
       this.gid = gid;
       this.nw = new Network("NwChat:" + gid, "chat:" + gid, this.onmessage);
-      this.nw.cls_chatroom = this;
+      this.nw.cls_room = this;
 
       div.innerHTML = "";
 
@@ -36,18 +36,18 @@ class ChatRoom extends Ui {
 
       this.send_table = new Table(this.outer_table.cell(1, 0), 1, 2);
 
-      this.send_input = createTextInput(this, "chat_send_text_" + gid);
+      this.send_input = createInputText(this, "chat_send_text_" + gid);
       this.send_btn = createButton(this, "chat_send_btn_" + gid, "send", this.send_click);
 
       this.send_table.cell_content_add(0, 0, this.send_input);
       this.send_table.cell_content_add(0, 1, this.send_btn);
    }
-   onmessage(obj) {
+   onmessage(jmsg) {
       // this = Network instance
       var now = new Date();
-      this.cls_chatroom.messages_table.add_row([
-         createSpan(now),
-         createSpan(obj[0])])
+      this.cls_room.messages_table.add_row([
+         createSpan(now + ""),
+         createSpan(jmsg[0])])
    }
    send_click(ev) {
       var chatroom = ev.target.creator;

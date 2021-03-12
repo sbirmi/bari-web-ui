@@ -1,0 +1,46 @@
+/* page level */
+
+.d7_page {
+   border-collapse: collapse;
+   padding: 0px;
+   margin: 0px;
+}
+
+/* login bar related */
+
+.d7_login_bar {
+   width: 100%;
+   text-align: center;
+   background: orange;
+   padding: 10px;
+}
+
+.d7_login_bar_text {
+   padding: 10px;
+}
+
+.d7_login_bar_input {
+   margin-right: 40px;
+   width: 150px;
+}
+
+/* common board related */
+
+.d7_board {
+   width: 950px;
+   height: 450px;
+}
+
+/* player board related */
+
+.d7_player_board {
+   width: 950px;
+}
+
+.d7_player_turn {
+   background-color: green;
+}
+
+.d7_player_info {
+   width: 300px;
+}

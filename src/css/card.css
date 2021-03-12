@@ -1,0 +1,23 @@
+.card_big {
+   border: solid 1px;
+   border-radius: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+.card_rack {
+   position: relative;
+   top: 0;
+   left: 0;
+}
+
+.card_rack_first {
+   position: relative;
+   top: 0;
+   left: 0;
+}
+
+.card_rack_remaining {
+   position: absolute;
+   top: 0;
+   left: 0;
+}
