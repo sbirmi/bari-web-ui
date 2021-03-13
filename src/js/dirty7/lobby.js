@@ -157,7 +157,7 @@ class Dirty7Lobby extends Ui {
       // [{"gameState": "WaitingForPlayers",
       //   "clientCount": {"foo": 1},
       //   "spectatorCount": 0},
-      //  0,
+      //  0,  <-- round # (0 => host parameters)
       //  {"ruleNames": ["basic"],
       //   "numPlayers": 2,
       //   "numDecks": 1,
@@ -166,6 +166,14 @@ class Dirty7Lobby extends Ui {
       //   "declareMaxPoints": 7,
       //   "penaltyPoints": 40,
       //   "stopPoints": 100}]
+      //
+      // [{"gameState": "PlayerTurn",
+      //   "clientCount": {"foo": 1, "bar": 1},
+      //   "spectatorCount": 0},
+      //  0,
+      //  {"ruleNames": ["basic"], "numPlayers": 2, "numDecks": 1, "numJokers": 0, "numCardsToStart": 7, "declareMaxPoints": 7, "penaltyPoints": 40, "stopPoints": 100},
+      //  2,    <-- current round
+      //  {"ruleNames": ["basic"], "numPlayers": 2, "numDecks": 1, "numJokers": 0, "numCardsToStart": 7, "declareMaxPoints": 7, "penaltyPoints": 40, "stopPoints": 100}]
 
       if (d7_ele_count(rcvd_status[0]["clientCount"]) > 0) {
          cell.appendChild(createLineBreak());
@@ -180,7 +188,7 @@ class Dirty7Lobby extends Ui {
       if (rcvd_status[0]["gameState"] != "WaitingForPlayers") {
          // Show round number
          cell.appendChild(createLineBreak());
-         cell.appendChild(createSpan("Round #" + rcvd_status[1]));
+         cell.appendChild(createSpan("Round #" + rcvd_status[3]));
       }
       function add_params(msg, key) {
          cell.appendChild(createLineBreak());

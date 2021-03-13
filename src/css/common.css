@@ -1,3 +1,17 @@
+/* Sizing and position */
+
+.width100 {
+   width: 100%;
+}
+
+.height100 {
+   height: 100%;
+}
+
+.floatleft {
+   float: left;
+}
+
 /* Alignments */
 
 .center {
@@ -6,6 +20,10 @@
 
 .right {
    text-align: right;
+}
+
+.bottom {
+   vertical-align: bottom;
 }
 
 .top {
@@ -27,15 +45,3 @@
 .text {
    font-size: 20px;
 }
-
-/* Sizing and position */
-
-.width100 {
-   width: 100%;
-   border: 1px;
-}
-
-.floatleft {
-   float: left;
-}
-

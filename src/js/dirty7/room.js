@@ -81,7 +81,6 @@ class Dirty7Board extends Dirty7UiBase {
       super(room, nw, parent_ui);
 
       this.container_table = new Table(parent_ui, 1, 2, "d7_board");
-      this.container_table.cell_class(0, 0, "center");
       this.container_table.cell(0, 1).style.width = "250px";
 
       this.card_rack = new CardRack(
@@ -112,21 +111,34 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
       this.alias = alias;
 
       this.has_turn = false;  // tracks if it's this players turn
-      this.is_self = false;   // tracks if this is the logged in user
+      this.last_msg_turn = null;
 
       this.container_table = new Table(parent_ui, 1, 2, "d7_player_board");
-      this.container_table.cell_class(0, 0, "d7_player_text_pane");
 
-      var player_info = new Table(this.container_table.cell(0, 0), 2, 1, "d7_player_info");
+      // player_text_pane
+      this.container_table.cell_class(0, 0, "d7_player_text_pane top");
+
+      var player_info = new Table(this.container_table.cell(0, 0),
+                                  2, 1, "d7_player_info height100");
       this.player_pane = player_info.cell(0, 0);
-      this.move_pane = player_info.cell(1, 0);
-      player_info.ui.style.border = "1px";
 
+      this.move_pane = player_info.cell(1, 0);
+      player_info.cell_class(1, 0, "bottom center");
+      this.play_btn = createButton(this, "", "Play", this.play_click, "text");
+      this.declare_btn = createButton(this, "", "Declare", this.declare_click, "text");
+      this.move_pane.appendChild(this.play_btn);
+      this.move_pane.appendChild(this.declare_btn);
+      this.set_move_pane_visibility(room.last_msg_turn && room.last_msg_turn[2] == alias);
+
+      // Cards pane
       this.card_rack = new CardRack(this.container_table.cell(0, 1), "", 40);
 
       this.ui = parent_ui.appendChild(this.container_table.ui);
 
       this.update_ui();
+   }
+   set_move_pane_visibility(val) {
+      this.move_pane.style.display = val ? "block" : "none";
    }
    set_has_turn(val) {
       this.has_turn = val;
@@ -143,6 +155,26 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
       if (this.card_rack.count() > count) {
          this.card_rack.remove_tail_cards(count);
       }
+   }
+   play_click(ev) {
+      var player_board = ev.target.creator;
+      var room = player_board.room;
+
+      var move = {};
+      var dropCards = player_board.card_rack.selected_cards_jmsg();
+      var numDrawCards = room.board.deck.selected_cards_count();
+      var pickCards = room.board.card_rack.selected_cards_jmsg();
+
+      if (dropCards.length)   { move["dropCards"] = dropCards; }
+      if (numDrawCards)       { move["numDrawCards"] = numDrawCards; }
+      if (pickCards.length)   { move["pickCards"] = pickCards; }
+      var jmsg = ["PLAY", move];
+      room.nw.send(jmsg);
+   }
+   declare_click(ev) {
+      var room = ev.target.creator.room;
+      var jmsg = ["DECLARE"];
+      room.nw.send(jmsg);
    }
    update_ui() {
       clearContents(this.player_pane);
@@ -195,13 +227,20 @@ class Dirty7Room extends Ui {
    }
 
    process_turn(jmsg) {
+      this.last_msg_turn = jmsg;
       for (var alias in this.player_boards) {
          var board = this.player_boards[alias];
          board.set_has_turn(board.alias == jmsg[2]);
+         board.set_move_pane_visibility(alias == this.login_bar.alias_internal &&
+                                        board.alias == jmsg[2]);
       }
    }
 
    process_player_cards(jmsg) {
+      // Examples:
+      //    ["PLAYER-CARDS", 1, "foo", 5]
+      //    ["PLAYER-CARDS", 1, "foo", 5,
+      //     [["S", 9], ["S", 13], ["D", 2], ["H", 4], ["D", 13]]]
       this.maybe_create_player_board(jmsg[2]);
 
       if (this.login_bar.alias_internal == jmsg[2]) {
@@ -209,8 +248,10 @@ class Dirty7Room extends Ui {
          var card_rack = this.player_boards[jmsg[2]].card_rack;
          card_rack.clear();
 
-         var cards = dirty7_cards_from_card_descs(card_rack, jmsg[4]);
-         card_rack.append_cards(cards);
+         if (jmsg.length == 5) {
+            var cards = dirty7_cards_from_card_descs(card_rack, jmsg[4]);
+            card_rack.append_cards(cards);
+         }
 
       } else {
          // Someone else's card
@@ -223,9 +264,19 @@ class Dirty7Room extends Ui {
       //   ["TABLE-CARDS", 1, 37, 0, [["H", 5]]]
       this.board.deck.set_card_count(jmsg[2]);
 
-      this.board.card_rack.clear();
       var cards = dirty7_cards_from_card_descs(this.board.card_rack, jmsg[4]);
+      this.board.card_rack.clear();
       this.board.card_rack.append_cards(cards);
+   }
+
+   process_update(jmsg) {
+      // ["UPDATE", 1, {"PLAY": ["foo", [["S", 5], ["D", 5]], 1, [], {"AdvanceTurn": 1}]}]
+      // ["UPDATE", 1, {"DECLARE": ["bar", 3]}]
+
+      if ("DECLARE" in jmsg[2]) {
+         // 
+      }
+
    }
 
    onmessage(jmsg) {
@@ -236,7 +287,10 @@ class Dirty7Room extends Ui {
          alert("Bad name and password");
 
       } else if (jmsg[0] == "JOIN-OKAY") {
-         this
+         var alias = room.login_bar.alias_internal;
+         if (room.last_msg_turn && alias in room.player_boards) {
+            room.player_boards[alias].set_move_pane_visibility(room.last_msg_turn[2] == alias);
+         }
          room.login_bar.hide();
 
       } else if (jmsg[0] == "TURN-ORDER") {
@@ -250,6 +304,9 @@ class Dirty7Room extends Ui {
 
       } else if (jmsg[0] == "TABLE-CARDS") {
          room.process_table_cards(jmsg);
+
+      } else if (jmsg[0] == "UPDATE") {
+         room.process_update(jmsg);
 
       }
    }

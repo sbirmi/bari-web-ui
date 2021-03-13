@@ -195,12 +195,19 @@ class CardRack {
          card.ui.remove();
       }
    }
-   selected() {
+   selected_cards() {
       var res = [];
       for (var card of this.cards) {
          if (card.selected) {
             res.push(card);
          }
+      }
+      return res;
+   }
+   selected_cards_jmsg() {
+      var res = [];
+      for (var card of this.selected_cards()) {
+         res.push([card.suit, card.rank]);
       }
       return res;
    }
@@ -219,6 +226,13 @@ class CardFaceDownDeck extends CardRack {
    set_card_count(count) {
       this.card_count = count;
       this.update_ui();
+   }
+   selected_cards_count() {
+      var count = 0;
+      for (var card of this.cards) {
+         if (card.selected) { count++; }
+      }
+      return count;
    }
    update_ui() {
       this.clear();
