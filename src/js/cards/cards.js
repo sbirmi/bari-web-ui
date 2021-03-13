@@ -160,6 +160,9 @@ class CardRack {
 
       this.parent_ui.appendChild(this.ui);
    }
+   count() {
+      return this.cards.length;
+   }
    append_cards(cards) {
       for (var card of cards) {
          this.append_card(card);
@@ -176,11 +179,21 @@ class CardRack {
       card.shift_up(this.overlap_y * this.cards.length);
       this.cards.push(card);
    }
-   clear() {
-      for (var card of this.cards) {
-         card.remove();
+   card(idx) {
+      return this.cards[idx];
+   }
+   remove_tail_cards(count) {
+      var excess = this.cards.length - count;
+      for (var i=0; i < excess; i++) {
+         var card = this.cards.pop();
+         card.ui.remove();
       }
-      this.cards = [];
+   }
+   clear() {
+      while (this.cards.length) {
+         var card = this.cards.pop();
+         card.ui.remove();
+      }
    }
    selected() {
       var res = [];
@@ -203,7 +216,12 @@ class CardFaceDownDeck extends CardRack {
       this.clickable_count = clickable_count;
       this.update_ui();
    }
+   set_card_count(count) {
+      this.card_count = count;
+      this.update_ui();
+   }
    update_ui() {
+      this.clear();
       for (var i=0; i<this.card_count; i++) {
          var card = new Card(this.ui, 0, 0, true);
          // card.ui.style.zIndex = this.card_count - i;

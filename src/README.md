@@ -1,8 +1,13 @@
 
-Requirements
+# Requirements
 
 * python3
 * Flask
 
-Card graphics from
-https://sourceforge.net/projects/vector-cards/
+# Credits:
+1. Card graphics from
+   https://sourceforge.net/projects/vector-cards/
+
+# TODO
+
+1. Show round number

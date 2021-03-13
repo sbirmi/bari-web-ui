@@ -45,10 +45,10 @@ class Dirty7LoginBar extends Dirty7UiBase {
 
    connect_click(ev) {
       var login_bar = ev.target.creator;
-      this.alias_internal = login_bar.alias.value;
+      login_bar.alias_internal = login_bar.alias.value;
       var passwd = login_bar.passwd.value;
 
-      login_bar.nw.send(["JOIN", this.alias_internal, passwd]);
+      login_bar.nw.send(["JOIN", login_bar.alias_internal, passwd]);
    }
 }
 
@@ -93,22 +93,25 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
   | |-player_pane------------| |
   | | [Play Cards] [Declare] | |
   | +-move_pane--------------+ |
-  +------------------------------cards_pane-------+
+  +-player_text_pane-------------cards_pane-------+
 
 */
    constructor(room, alias, nw, parent_ui) {
       super(room, nw, parent_ui);
       this.alias = alias;
-      this.has_turn = false;
+
+      this.has_turn = false;  // tracks if it's this players turn
+      this.is_self = false;   // tracks if this is the logged in user
 
       this.container_table = new Table(parent_ui, 1, 2, "d7_player_board");
-      this.container_table.cell_class(0, 1, "right");
+      this.container_table.cell_class(0, 0, "d7_player_text_pane");
 
       var player_info = new Table(this.container_table.cell(0, 0), 2, 1, "d7_player_info");
       this.player_pane = player_info.cell(0, 0);
       this.move_pane = player_info.cell(1, 0);
+      player_info.ui.style.border = "1px";
 
-      this.cards_pane = this.container_table.cell(0, 1);
+      this.card_rack = new CardRack(this.container_table.cell(0, 1), "", 40);
 
       this.ui = parent_ui.appendChild(this.container_table.ui);
 
@@ -122,12 +125,19 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
          this.ui.classList.remove("d7_player_turn");
       }
    }
+   set_card_count(count) {
+      while (this.card_rack.count() < count) {
+         this.card_rack.append_card(new Card(this.card_rack.ui, 0, 0, true));
+      }
+      if (this.card_rack.count() > count) {
+         this.card_rack.remove_tail_cards(count);
+      }
+   }
    update_ui() {
       clearContents(this.player_pane);
       this.player_pane.appendChild(createSpan(this.alias, "text"));
    }
 }
-
 
 
 class Dirty7Room extends Ui {
@@ -156,14 +166,20 @@ class Dirty7Room extends Ui {
    }
 
    /**
+    * Helpers
+    */
+   maybe_create_player_board(alias) {
+      if (!(alias in this.player_boards)) {
+         var board = new Dirty7PlayerBoard(this, alias, this.nw, this.div);
+         this.player_boards[alias] = board;
+      }
+   }
+   /**
     * Message handling
     */
    process_turn_order(jmsg) {
       for (var alias of jmsg[2]) {
-         if (!(alias in this.player_boards)) {
-            var board = new Dirty7PlayerBoard(this, alias, this.nw, this.div);
-            this.player_boards[alias] = board;
-         }
+         this.maybe_create_player_board(alias);
       }
    }
 
@@ -171,6 +187,28 @@ class Dirty7Room extends Ui {
       for (var alias in this.player_boards) {
          var board = this.player_boards[alias];
          board.set_has_turn(board.alias == jmsg[2]);
+      }
+   }
+
+   process_player_cards(jmsg) {
+      this.maybe_create_player_board(jmsg[2]);
+
+      if (this.login_bar.alias_internal == jmsg[2]) {
+         // my cards
+         var card_rack = this.player_boards[jmsg[2]].card_rack;
+         card_rack.clear();
+
+         var cards = [];
+         for (var card_desc of jmsg[4]) {
+            var card = new Card(card_rack.ui,card_desc[0], card_desc[1]); // suit, rank
+            card.set_click_action("slide_up");
+            cards.push(card);
+         }
+         card_rack.append_cards(cards);
+
+      } else {
+         // Someone else's card
+         this.player_boards[jmsg[2]].set_card_count(jmsg[3]);
       }
    }
 
@@ -182,6 +220,7 @@ class Dirty7Room extends Ui {
          alert("Bad name and password");
 
       } else if (jmsg[0] == "JOIN-OKAY") {
+         this
          room.login_bar.hide();
 
       } else if (jmsg[0] == "TURN-ORDER") {
@@ -189,6 +228,10 @@ class Dirty7Room extends Ui {
 
       } else if (jmsg[0] == "TURN") {
          room.process_turn(jmsg);
+
+      } else if (jmsg[0] == "PLAYER-CARDS") {
+         room.process_player_cards(jmsg);
+
       }
    }
 }

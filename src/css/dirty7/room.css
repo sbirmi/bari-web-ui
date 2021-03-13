@@ -35,12 +35,17 @@
 
 .d7_player_board {
    width: 950px;
+   height: 350px;
 }
 
 .d7_player_turn {
    background-color: green;
 }
 
+.d7_player_text_pane {
+   width: 200px;
+}
+
 .d7_player_info {
-   width: 300px;
+   width: 200px;
 }
