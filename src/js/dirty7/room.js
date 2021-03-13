@@ -1,5 +1,15 @@
 console.log("Loading dirty7/room.js");
 
+function dirty7_cards_from_card_descs(card_rack, card_descs) {
+   var cards = [];
+   for (var card_desc of card_descs) {
+      var card = new Card(card_rack.ui, card_desc[0], card_desc[1]); // suit, rank
+      card.set_click_action("slide_up");
+      cards.push(card);
+   }
+   return cards;
+}
+
 class Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       this.room = room;
@@ -71,14 +81,15 @@ class Dirty7Board extends Dirty7UiBase {
       super(room, nw, parent_ui);
 
       this.container_table = new Table(parent_ui, 1, 2, "d7_board");
-      this.container_table.cell_class(0, 1, "right");
+      this.container_table.cell_class(0, 0, "center");
+      this.container_table.cell(0, 1).style.width = "250px";
 
       this.card_rack = new CardRack(
          this.container_table.cell(0, 0), "",
          45);
       this.deck = new CardFaceDownDeck(
          this.container_table.cell(0, 1), "",
-         0, 0);
+         0, 1);
 
       this.ui = parent_ui.appendChild(this.container_table.ui);
    }
@@ -198,18 +209,23 @@ class Dirty7Room extends Ui {
          var card_rack = this.player_boards[jmsg[2]].card_rack;
          card_rack.clear();
 
-         var cards = [];
-         for (var card_desc of jmsg[4]) {
-            var card = new Card(card_rack.ui,card_desc[0], card_desc[1]); // suit, rank
-            card.set_click_action("slide_up");
-            cards.push(card);
-         }
+         var cards = dirty7_cards_from_card_descs(card_rack, jmsg[4]);
          card_rack.append_cards(cards);
 
       } else {
          // Someone else's card
          this.player_boards[jmsg[2]].set_card_count(jmsg[3]);
       }
+   }
+
+   process_table_cards(jmsg) {
+      // Example:
+      //   ["TABLE-CARDS", 1, 37, 0, [["H", 5]]]
+      this.board.deck.set_card_count(jmsg[2]);
+
+      this.board.card_rack.clear();
+      var cards = dirty7_cards_from_card_descs(this.board.card_rack, jmsg[4]);
+      this.board.card_rack.append_cards(cards);
    }
 
    onmessage(jmsg) {
@@ -231,6 +247,9 @@ class Dirty7Room extends Ui {
 
       } else if (jmsg[0] == "PLAYER-CARDS") {
          room.process_player_cards(jmsg);
+
+      } else if (jmsg[0] == "TABLE-CARDS") {
+         room.process_table_cards(jmsg);
 
       }
    }
