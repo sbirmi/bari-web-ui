@@ -4,6 +4,12 @@
    filter: drop-shadow(2px 2px 2px #a0a0a0);
 }
 
+.card_small {
+   border: solid 1px;
+   border-radius: 3px;
+   filter: drop-shadow(1px 1px 1px #a0a0a0);
+}
+
 .card_rack {
    position: relative;
    top: 0;

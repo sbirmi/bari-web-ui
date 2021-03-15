@@ -1,9 +1,9 @@
 console.log("Loading dirty7/room.js");
 
-function dirty7_cards_from_card_descs(card_rack, card_descs) {
+function dirty7_cards_from_card_descs(card_rack, card_descs, c_theme=0) {
    var cards = [];
    for (var card_desc of card_descs) {
-      var card = new Card(card_rack.ui, card_desc[0], card_desc[1]); // suit, rank
+      var card = new Card(card_rack.ui, card_desc[0], card_desc[1], false, c_theme); // suit, rank
       card.set_click_action("slide_up");
       cards.push(card);
    }
@@ -80,7 +80,7 @@ class Dirty7Board extends Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui);
 
-      this.container_table = new Table(parent_ui, 1, 2, "d7_board");
+      this.container_table = new Table(parent_ui, 1, 2, "d7_board floatleft");
       this.container_table.cell(0, 1).style.width = "250px";
 
       this.card_rack = new CardRack(
@@ -120,6 +120,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
 
       var player_info = new Table(this.container_table.cell(0, 0),
                                   2, 1, "d7_player_info height100");
+      player_info.cell_class(0, 0, "top");
       this.player_pane = player_info.cell(0, 0);
 
       this.move_pane = player_info.cell(1, 0);
@@ -179,9 +180,149 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
    update_ui() {
       clearContents(this.player_pane);
       this.player_pane.appendChild(createSpan(this.alias, "text"));
+      this.p
    }
 }
 
+class Dirty7ScoreBoard extends Dirty7UiBase {
+/*
+  +-Container-----------------------------+
+  |  | Player 1  | Player 2  | Player 3   |
+  |---------------------------------------|
+  | 1| [][][]  0 | [][]    8 |  []     10 |
+  | 2| [][][] 12 | [][]   20 |  []      0 |
+  |  |        12 |        28 |         10 |
+  +---------------------------------------+
+
+  Each row cell has two spans: left for cards, right for score
+*/
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui);
+
+      this.highest_round_num_seen = 0;
+      this.player_cards_data = []; // [rno, alias, card_descs]
+      this.alias_to_idx = {};
+
+      this.container_table = null;
+   }
+   init_container_table(data) {
+      var count = 0;
+      for (var alias in data) {
+         this.alias_to_idx[alias] = count++;
+      }
+      this.container_table = new Table(this.parent_ui, 2, count + 1, "d7_score_board floatleft");
+
+      this.cell_inner_table = [];
+
+      this.ui = this.parent_ui.appendChild(this.container_table.ui);
+
+      // Populate first row
+      for (var alias in this.alias_to_idx) {
+         var idx = this.alias_to_idx[alias];
+
+         this.container_table.cell_class(0, idx + 1, "d7_score_board_header");
+         this.container_table.cell_content_add(0, idx + 1,
+                                               createSpan(alias, "head2"));
+
+         this.container_table.cell_class(1, idx + 1, "right d7_score_board_total");
+         this.container_table.cell_content_add(1, idx + 1, createSpan("0", "text"));
+      }
+   }
+
+   update_player_cards(round_num, alias, card_descs) {
+      // this.player_cards_msgs.push(jmsg);
+      if (round_num <= this.highest_round_num_seen) {
+         // process immediately
+         this.update_player_cards_impl(round_num, alias, card_descs);
+      } else {
+         this.player_cards_data.push([round_num, alias, card_descs]);
+      }
+   }
+
+   update_player_cards_impl(round_num, alias, card_descs) {
+      var idx = this.alias_to_idx[alias];
+
+      var inner_table = this.cell_inner_table[round_num][idx + 1];
+      var player_card_cell = inner_table.cell(0, 0);
+      clearContents(player_card_cell);
+
+      var card_rack = new CardRack(player_card_cell, "", 25);
+      var cards = dirty7_cards_from_card_descs(card_rack, card_descs, 1);
+      card_rack.append_cards(cards);
+   }
+
+   add_row(round_num) {
+      this.container_table.add_row(null, round_num);
+
+      this.container_table.cell_content_add(round_num, 0,
+                                            createSpan("" + round_num, "text"));
+
+      this.cell_inner_table[round_num] = [];
+      for (var i=1; i < this.container_table.num_cols; ++i) {
+         this.cell_inner_table[round_num][i] = new Table(this.container_table.cell(round_num, i),
+                                     1, 2, "d7_score_board_inner_table width100");
+         this.cell_inner_table[round_num][i].cell_class(0, 1, "right");
+         this.cell_inner_table[round_num][i].cell_content_set(0, 1, createSpan("", "text"));
+      }
+
+      // Review player card data queued in
+      // this.player_cards_data and insert them now
+      var new_player_cards_data = [];
+      for (var row of this.player_cards_data) {
+         if (row[0] == round_num) {
+            // flush now
+            this.update_player_cards_impl(row[0], row[1], row[2]);
+         } else {
+            new_player_cards_data.push(row);
+         }
+      }
+      this.player_cards_data = new_player_cards_data;
+   }
+
+   update_round_score(round_num, data) {
+      if (this.container_table == null) {
+         this.init_container_table(data);
+      }
+
+      if (round_num > this.highest_round_num_seen) {
+         for (var i = this.highest_round_num_seen + 1; i <= round_num; ++i) {
+            this.add_row(i);
+         }
+         this.highest_round_num_seen = round_num;
+      }
+
+      for (var alias in data) {
+         var idx = this.alias_to_idx[alias];
+         var score = data[alias];
+         if (score != null) {
+            this.cell_inner_table[round_num][idx + 1].cell_content_set(0, 1,
+               createSpan("" + score, "text"));
+         }
+      }
+
+      this.update_total();
+   }
+   update_total() {
+      if (this.container_table == null) { return; }
+      if (this.highest_round_num_seen == 0) { return; }
+
+      for (var alias in this.alias_to_idx) {
+         var idx = this.alias_to_idx[alias];
+
+         var total = 0;
+         for (var round_num=1; round_num <= this.highest_round_num_seen; ++round_num) {
+            var score = this.cell_inner_table[round_num][idx + 1].cell(0, 1).childNodes[0].innerHTML;
+            if (score) {
+               total += Number(score);
+            }
+         }
+
+         this.container_table.cell_content_set(this.highest_round_num_seen + 1,
+                                               idx + 1,
+                                               createSpan("" + total, "text"));
+      }
+   }
+}
 
 class Dirty7Room extends Ui {
    constructor(gid, div) {
@@ -204,8 +345,10 @@ class Dirty7Room extends Ui {
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
       this.board = new Dirty7Board(this, this.nw, this.div);
 
-      this.player_boards_holder = this.div.appendChild(createDiv(this, ""));
+      this.player_boards_holder = this.div.appendChild(createDiv(this, "floatleft"));
       this.player_boards = {};
+
+      this.score_board = new Dirty7ScoreBoard(this, this.nw, this.div);
    }
 
    /**
@@ -217,16 +360,35 @@ class Dirty7Room extends Ui {
          this.player_boards[alias] = board;
       }
    }
+
+   maybe_update_round_num(num) {
+      if (this.round_num < num) {
+         this.round_num = num;
+      }
+   }
+
+   is_old_round(num) {
+      return num < this.round_num;
+   }
+
    /**
     * Message handling
     */
    process_turn_order(jmsg) {
+      // Example:
+      //    ["TURN-ORDER", 2, ["bar", "foo"]]
+      if (this.is_old_round(jmsg[1])) { return; }
+
       for (var alias of jmsg[2]) {
          this.maybe_create_player_board(alias);
       }
    }
 
    process_turn(jmsg) {
+      // Example:
+      //    ["TURN", 2, "foo"]
+      if (this.is_old_round(jmsg[1])) { return; }
+
       this.last_msg_turn = jmsg;
       for (var alias in this.player_boards) {
          var board = this.player_boards[alias];
@@ -241,20 +403,25 @@ class Dirty7Room extends Ui {
       //    ["PLAYER-CARDS", 1, "foo", 5]
       //    ["PLAYER-CARDS", 1, "foo", 5,
       //     [["S", 9], ["S", 13], ["D", 2], ["H", 4], ["D", 13]]]
+
+      if (jmsg.length == 5) {
+         this.score_board.update_player_cards(jmsg[1], jmsg[2], jmsg[4]);
+      }
+
+      if (this.is_old_round(jmsg[1])) { return; }
+
       this.maybe_create_player_board(jmsg[2]);
 
-      if (this.login_bar.alias_internal == jmsg[2]) {
-         // my cards
+      if (jmsg.length == 5) {
+         // My cards or other's cards when the round is over
          var card_rack = this.player_boards[jmsg[2]].card_rack;
          card_rack.clear();
-
-         if (jmsg.length == 5) {
-            var cards = dirty7_cards_from_card_descs(card_rack, jmsg[4]);
-            card_rack.append_cards(cards);
-         }
-
+         var cards = dirty7_cards_from_card_descs(card_rack, jmsg[4]);
+         card_rack.append_cards(cards);
       } else {
-         // Someone else's card
+         var card_rack = this.player_boards[jmsg[2]].card_rack;
+         card_rack.clear();
+         // Cards of others during a round
          this.player_boards[jmsg[2]].set_card_count(jmsg[3]);
       }
    }
@@ -262,6 +429,8 @@ class Dirty7Room extends Ui {
    process_table_cards(jmsg) {
       // Example:
       //   ["TABLE-CARDS", 1, 37, 0, [["H", 5]]]
+      if (this.is_old_round(jmsg[1])) { return; }
+
       this.board.deck.set_card_count(jmsg[2]);
 
       var cards = dirty7_cards_from_card_descs(this.board.card_rack, jmsg[4]);
@@ -269,12 +438,22 @@ class Dirty7Room extends Ui {
       this.board.card_rack.append_cards(cards);
    }
 
+   process_round_score(jmsg) {
+      // Example:
+      //    "ROUND-SCORE", 2, {"foo": 4, "bar": 4}]
+      //    "ROUND-SCORE", 3, {"foo": null, "bar": null}]
+
+      this.score_board.update_round_score(jmsg[1], jmsg[2]);
+   }
+
    process_update(jmsg) {
+      if (this.is_old_round(jmsg[1])) { return; }
+
       // ["UPDATE", 1, {"PLAY": ["foo", [["S", 5], ["D", 5]], 1, [], {"AdvanceTurn": 1}]}]
       // ["UPDATE", 1, {"DECLARE": ["bar", 3]}]
 
       if ("DECLARE" in jmsg[2]) {
-         // 
+         // TODO
       }
 
    }
@@ -294,18 +473,27 @@ class Dirty7Room extends Ui {
          room.login_bar.hide();
 
       } else if (jmsg[0] == "TURN-ORDER") {
+         room.maybe_update_round_num(jmsg[1]);
          room.process_turn_order(jmsg);
 
       } else if (jmsg[0] == "TURN") {
+         room.maybe_update_round_num(jmsg[1]);
          room.process_turn(jmsg);
 
       } else if (jmsg[0] == "PLAYER-CARDS") {
+         room.maybe_update_round_num(jmsg[1]);
          room.process_player_cards(jmsg);
 
       } else if (jmsg[0] == "TABLE-CARDS") {
+         room.maybe_update_round_num(jmsg[1]);
          room.process_table_cards(jmsg);
 
+      } else if (jmsg[0] == "ROUND-SCORE") {
+         room.maybe_update_round_num(jmsg[1]);
+         room.process_round_score(jmsg);
+
       } else if (jmsg[0] == "UPDATE") {
+         room.maybe_update_round_num(jmsg[1]);
          room.process_update(jmsg);
 
       }

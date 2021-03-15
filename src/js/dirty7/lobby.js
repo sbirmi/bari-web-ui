@@ -149,8 +149,7 @@ class Dirty7Lobby extends Ui {
       clearContents(cell);
 
       var a = createLink("/dirty7/" + gid,
-                         createSpan("Dirty7:" + gid, "text"),
-                         true);
+                         createSpan("Dirty7:" + gid, "text"));
       cell.appendChild(a);
       cell.appendChild(createSpan(" " + rcvd_status[0]["gameState"], "text"));
 

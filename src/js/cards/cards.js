@@ -12,22 +12,36 @@ function card_pos_offset(attr_val) {
  *
  * Provides URL to images used for cards
  */
-class CardTheme {
-   constructor(style=null) {
-      this.style = style;
+class CardThemeBase {
+   constructor(base_dir, ext, cls) {
+      this.base_dir = base_dir;
+      this.ext = ext;
+      this.cls = cls;
    }
    url(suit, rank) {
-      var u = "/assets/cards/";
+      var u = this.base_dir;
       if (suit == "JOKER") {
-         u += "JOKER.svg";
+         u += "JOKER" + this.ext;
       } else {
-         u += suit + rank + ".svg";
+         u += suit + rank + this.ext;
       }
       return u;
    }
    face_down_url() {
-      var u = "/assets/cards/back.svg";
+      var u = this.base_dir + "back" + this.ext;
       return u;
+   }
+}
+
+class CardTheme extends CardThemeBase {
+   constructor() {
+      super("/assets/cards/", ".svg", "card_big");
+   }
+}
+
+class SmallCardTheme extends CardThemeBase {
+   constructor() {
+      super("/assets/cards_small/", ".png", "card_small");
    }
 }
 
@@ -39,7 +53,7 @@ class CardTheme {
  */
 class Card {
    card_shift = 33;
-   card_themes = [new CardTheme()];
+   card_themes = [new CardTheme(), new SmallCardTheme()];
 
    constructor(parent_ui, suit, rank,
                face_down=false,
@@ -49,12 +63,12 @@ class Card {
       this.rank = rank;
       this.face_down = face_down;
       this.selected = false;
-      this.c_theme = c_theme;
+      this.card_theme = this.card_themes[c_theme];
 
       this.click_action = null;
       this.cb = null;
 
-      this.ui = createImg(this, "", "card_big");
+      this.ui = createImg(this, "", this.card_theme.cls);
       this.parent_ui.appendChild(this.ui);
 
       this.update_ui();
@@ -141,9 +155,9 @@ class Card {
    update_ui() {
       var url;
       if (this.face_down) {
-         url = this.card_themes[this.c_theme].face_down_url();
+         url = this.card_theme.face_down_url();
       } else {
-         url = this.card_themes[this.c_theme].url(this.suit, this.rank);
+         url = this.card_theme.url(this.suit, this.rank);
       }
       this.ui.src = url;
    }

@@ -4,6 +4,7 @@
    border-collapse: collapse;
    padding: 0px;
    margin: 0px;
+   overflow-x: hidden;
 }
 
 /* login bar related */
@@ -43,9 +44,25 @@
 }
 
 .d7_player_text_pane {
-   width: 200px;
+   width: 250px;
 }
 
 .d7_player_info {
-   width: 200px;
+   width: 250px;
+}
+
+/* Score board */
+.d7_score_board {
+   width: 950px;
+}
+
+.d7_score_board_header {
+   background-color: lightblue;
+}
+
+.d7_score_board_total {
+   background-color: lightgreen;
+}
+
+.d7_score_board_inner_table {
 }

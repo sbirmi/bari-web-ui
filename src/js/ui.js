@@ -172,6 +172,11 @@ class Table {
       this.cell(ri, ci).appendChild(obj);
    }
 
+   cell_content_set(ri, ci, obj) {
+      clearContents(this.cell(ri, ci));
+      this.cell(ri, ci).appendChild(obj);
+   }
+
    // Styling
    body_class(cls) {
       this.tbody.className = cls;
