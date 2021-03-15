@@ -179,7 +179,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
    }
    update_ui() {
       clearContents(this.player_pane);
-      this.player_pane.appendChild(createSpan(this.alias, "text"));
+      this.player_pane.appendChild(createSpan(this.alias, "head2"));
       this.p
    }
 }
