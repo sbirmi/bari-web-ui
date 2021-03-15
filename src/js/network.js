@@ -20,7 +20,7 @@ class Network {
       this.sock.cls_nw = this;
 
       this.sock.onopen = function(ev) {
-         var sock = ev.explicitOriginalTarget;
+         var sock = ev.target;
          console.log(sock.cls_nw.name + " connected");
 
          if (sock.cls_nw.onopen) {
@@ -28,7 +28,7 @@ class Network {
          }
       }
       this.sock.onmessage = function(ev) {
-         var sock = ev.explicitOriginalTarget;
+         var sock = ev.target;
          console.log(sock.cls_nw.name + " RX: " + ev.data);
 
          if (sock.cls_nw.onmessage) {
@@ -37,7 +37,7 @@ class Network {
          }
       }
       this.sock.onclose = function(ev) {
-         var sock = ev.explicitOriginalTarget;
+         var sock = ev.target;
          console.log(sock.cls_nw.name + " closed");
 
          if (sock.cls_nw.onclose) {
