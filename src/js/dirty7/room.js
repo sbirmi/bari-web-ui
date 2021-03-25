@@ -1,10 +1,11 @@
 console.log("Loading dirty7/room.js");
 
-function dirty7_cards_from_card_descs(card_rack, card_descs, c_theme=0) {
+function dirty7_cards_from_card_descs(card_rack, card_descs, c_theme=0,
+                                      click_action="slide_up") {
    var cards = [];
    for (var card_desc of card_descs) {
       var card = new Card(card_rack.ui, card_desc[0], card_desc[1], false, c_theme); // suit, rank
-      card.set_click_action("slide_up");
+      card.set_click_action(click_action);
       cards.push(card);
    }
    return cards;
@@ -255,7 +256,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       clearContents(player_card_cell);
 
       var card_rack = new CardRack(player_card_cell, "", 25);
-      var cards = dirty7_cards_from_card_descs(card_rack, card_descs, 1);
+      var cards = dirty7_cards_from_card_descs(card_rack, card_descs, 1, null);
       card_rack.append_cards(cards);
    }
 
@@ -506,7 +507,7 @@ class Dirty7Room extends Ui {
          if (cards_picked.length > 0) {
             var span = createSpan(who + " picked ", "head2");
             var card_rack = new CardRack(span, "", 25);
-            var cards = dirty7_cards_from_card_descs(card_rack, cards_picked, 1);
+            var cards = dirty7_cards_from_card_descs(card_rack, cards_picked, 1, null);
             card_rack.append_cards(cards);
             this.show_move_obj(span);
          } else {

@@ -10,7 +10,6 @@
 
 # TODO
 
-1. roundscore cards shouldn't be clickable
 2. createDiv --> create_div etc
 3. cell_style --> set_cell_style()
 4. move_pane --> size & alignment
@@ -18,3 +17,4 @@
 6. Handle disconnects better
 7. player_info bottom align not working
 8. pause round on completion
+9. rename overlap_x
