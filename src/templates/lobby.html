@@ -1,8 +1,9 @@
 <html>
 <head>
    <title>Lobby</title>
-   <script src="/js/network.js"></script>
    <script src="/js/ui.js"></script>
+   <script src="/js/ui_notifications.js"></script>
+   <script src="/js/network.js"></script>
    <script src="/js/chat/lobby.js"></script>
    <script src="/js/dirty7/lobby.js"></script>
 
@@ -13,6 +14,7 @@
    <link rel="icon" type="image/png" href="/assets/bari_icon.png" />
 </head>
 <body>
+   <div id="divnotifications"></div>
    <table>
       <tr>
          <td class="top"><div id="divchatlobby"></div></td>
@@ -21,8 +23,11 @@
    </table>
 <script>
 <!--
+var notifications = new UiNotifications(document.getElementById("divnotifications"),
+                                        2000, "notifications_table");
 var chatlobby = new ChatLobby(document.getElementById("divchatlobby"));
-var d7lobby = new Dirty7Lobby(document.getElementById("divdirty7lobby"));
+var d7lobby = new Dirty7Lobby(document.getElementById("divdirty7lobby"),
+                              notifications);
 -->
 </script>
 </body>

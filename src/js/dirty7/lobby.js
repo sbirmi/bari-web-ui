@@ -69,8 +69,9 @@ function d7_ele_count(obj) {
 */
 
 class Dirty7Lobby extends Ui {
-   constructor(div) {
+   constructor(div, notifications) {
       super(div);
+      this.notifications = notifications;
       this.gname = "dirty7";
       this.nw = new Network("NwDirty7Lobby", "lobby", this.onmessage);
       this.nw.cls_lobby = this;
@@ -90,19 +91,19 @@ class Dirty7Lobby extends Ui {
       this.rules = createDropDown(this, "d7lobby_rules",
          ["basic"], "basic", "text");
       this.player_count = createDropDown(this, "d7lobby_player_count",
-         [1, 2, 3, 4], 2, "text");
+         [1, 2, 3, 4, 5, 6, 7, 8], 2, "text");
       this.start_card_count = createDropDown(this, "d7lobby_start_card_count",
-         [1, 4, 5, 6, 7, 8, 9, 10], 7, "text");
+         [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 7, "text");
       this.decl_point_limit = createDropDown(this, "d7lobby_point_limit",
-         [0, 4, 5, 6, 7, 8, 9, 10], 7, "text");
+         [1, 7, 10, 20, 30, 40, 999], 7, "text");
       this.penalty_points = createDropDown(this, "d7lobby_penalty_points",
-         [0, 10, 20, 30, 40, 50, 60], 40, "text");
+         [20, 40, 60, 80,100], 40, "text");
       this.game_end_points = createDropDown(this, "d7lobby_game_end_points",
-         [100, 150, 200], 100, "text");
+         [0, 50, 100, 150, 200, 250, 300], 100, "text");
       this.deck_count = createDropDown(this, "d7lobby_deck_count",
-         [1, 2, 3, 4], 1, "text");
+         [1, 2], 1, "text");
       this.joker_count = createDropDown(this, "d7lobby_joker_count",
-         [0, 2, 4, 6, 8], 0, "text");
+         [0, 1, 2, 3, 4], 0, "text");
 
       this.host_table.add_row([
          createSpan("Start a new room", "head2"),
@@ -143,6 +144,13 @@ class Dirty7Lobby extends Ui {
       this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1);
       this.existing_table.cell_content_add(0, 0, createSpan("Existing rooms", "head2"));
    }
+
+   show_error_msg(msg) {
+      var obj = createSpan(msg, "head2");
+      console.log(this);
+      this.notifications.add_msg(obj, "notification_error");
+   }
+
    update_row(row, gid, rcvd_status) {
       // row already has 1 cell. clear contents and add new status
       var cell = row.childNodes[0];
@@ -218,6 +226,10 @@ class Dirty7Lobby extends Ui {
             }
             lobby.update_row(row, gid, jmsg.slice(2));
          }
+
+      } else if (jmsg[0] == "HOST-BAD") {
+         lobby.show_error_msg(jmsg[1]);
+
       } else {
          console.log("UNHANDLED MESSAGE");
          console.log(jmsg);
@@ -234,7 +246,7 @@ class Dirty7Lobby extends Ui {
          Number(lobby.decl_point_limit.value),
          Number(lobby.penalty_points.value),
          Number(lobby.game_end_points.value)];
-      chatlobby.nw.send(msg);
+      lobby.nw.send(msg);
    }
 }
 
