@@ -571,6 +571,9 @@ class Dirty7Room extends Ui {
          room.maybe_update_round_num(jmsg[1]);
          room.process_update(jmsg);
 
+      } else if (jmsg[0] == "PLAY-BAD") {
+         room.show_error_msg(jmsg[1]);
+
       } else if (jmsg[0] == "GAME-OVER") {
          room.maybe_update_round_num(jmsg[1]);
          room.process_game_over(jmsg);
