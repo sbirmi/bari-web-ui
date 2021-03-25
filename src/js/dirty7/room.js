@@ -62,6 +62,14 @@ class Dirty7LoginBar extends Dirty7UiBase {
    }
 }
 
+class Dirty7GameOver extends Dirty7UiBase {
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui);
+      this.ui = createSpan("Game over", "width100 head1 d7_game_over");
+      this.parent_ui.appendChild(this.ui);
+   }
+}
+
 class Dirty7Board extends Dirty7UiBase {
 /*
 
@@ -337,6 +345,7 @@ class Dirty7Room extends Ui {
                             this.onmessage,
                             this.onclose);
       this.nw.cls_room = this;
+      this.game_over = false;
 
       this.init_display();
    }
@@ -349,6 +358,8 @@ class Dirty7Room extends Ui {
    init_display() {
       this.ui_notifications = new UiNotifications(this.div, 2000, "d7_notifications_table");
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
+      this.game_over_bar = new Dirty7GameOver(this, this.nw, this.div);
+      this.game_over_bar.hide();
       this.board = new Dirty7Board(this, this.nw, this.div);
 
       this.player_boards_holder = this.div.appendChild(createDiv(this, "floatleft"));
@@ -387,6 +398,9 @@ class Dirty7Room extends Ui {
       if (!(alias in this.player_boards)) {
          var board = new Dirty7PlayerBoard(this, alias, this.nw, this.div);
          this.player_boards[alias] = board;
+         if (this.game_over) {
+            board.hide();
+         }
       }
    }
 
@@ -503,7 +517,19 @@ class Dirty7Room extends Ui {
             }
          }
       }
+   }
 
+   process_game_over(jmsg) {
+      // ["GAME-OVER", ["cat"]]
+      this.game_over = true;
+
+      // TODO
+      for (var alias in this.player_boards) {
+         this.player_boards[alias].hide();
+      }
+      this.login_bar.hide();
+      this.board.hide();
+      this.game_over_bar.show();
    }
 
    onmessage(jmsg) {
@@ -511,7 +537,7 @@ class Dirty7Room extends Ui {
 
       if (jmsg[0] == "JOIN-BAD") {
          room.login_bar.alias.focus();
-         room.show_error_msg("Incorrect name or password");
+         room.show_error_msg(jmsg[1]);
 
       } else if (jmsg[0] == "JOIN-OKAY") {
          var alias = room.login_bar.alias_internal;
@@ -544,6 +570,10 @@ class Dirty7Room extends Ui {
       } else if (jmsg[0] == "UPDATE") {
          room.maybe_update_round_num(jmsg[1]);
          room.process_update(jmsg);
+
+      } else if (jmsg[0] == "GAME-OVER") {
+         room.maybe_update_round_num(jmsg[1]);
+         room.process_game_over(jmsg);
 
       }
    }
