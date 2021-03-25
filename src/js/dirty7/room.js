@@ -291,6 +291,9 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
          this.highest_round_num_seen = round_num;
       }
 
+      set_title("Dirty7 room #" + this.room.gid +
+                " round " + this.highest_round_num_seen);
+
       for (var alias in data) {
          var idx = this.alias_to_idx[alias];
          var score = data[alias];
@@ -330,7 +333,9 @@ class Dirty7Room extends Ui {
       this.gid = gid;
       this.round_num = 0;
 
-      this.nw = new Network("NwDirty7:" + gid, "dirty7:" + gid, this.onmessage);
+      this.nw = new Network("NwDirty7:" + gid, "dirty7:" + gid,
+                            this.onmessage,
+                            this.onclose);
       this.nw.cls_room = this;
 
       this.init_display();
@@ -342,6 +347,7 @@ class Dirty7Room extends Ui {
     * by showing the login bar at the top
     */
    init_display() {
+      this.ui_notifications = new UiNotifications(this.div, 2000, "d7_notifications_table");
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
       this.board = new Dirty7Board(this, this.nw, this.div);
 
@@ -349,6 +355,29 @@ class Dirty7Room extends Ui {
       this.player_boards = {};
 
       this.score_board = new Dirty7ScoreBoard(this, this.nw, this.div);
+   }
+
+
+   /**
+    * UI helpers
+    */
+   show_error_msg(msg) {
+      var obj = createSpan(msg, "head2");
+      this.ui_notifications.add_msg(obj, "d7_notification_error");
+   }
+
+   show_info_msg(msg) {
+      var obj = createSpan(msg, "head2");
+      this.ui_notifications.add_msg(obj, "d7_notification_info");
+   }
+
+   show_move_msg(msg) {
+      var obj = createSpan(msg, "head2");
+      this.ui_notifications.add_msg(obj, "d7_notification_move");
+   }
+
+   show_move_obj(obj) {
+      this.ui_notifications.add_msg(obj, "d7_notification_move");
    }
 
    /**
@@ -449,11 +478,30 @@ class Dirty7Room extends Ui {
    process_update(jmsg) {
       if (this.is_old_round(jmsg[1])) { return; }
 
-      // ["UPDATE", 1, {"PLAY": ["foo", [["S", 5], ["D", 5]], 1, [], {"AdvanceTurn": 1}]}]
-      // ["UPDATE", 1, {"DECLARE": ["bar", 3]}]
-
       if ("DECLARE" in jmsg[2]) {
-         // TODO
+         // ["UPDATE", 1, {"DECLARE": ["bar", 3]}]
+         var who = jmsg[2]["DECLARE"][0];
+         var score = jmsg[2]["DECLARE"][1];
+         this.show_move_msg(who + " declared at " + score + " points");
+
+      } else {
+         // ["UPDATE", 1, {"PLAY": ["foo", [["S", 5], ["D", 5]], 1, [["S", "4"]], {"AdvanceTurn": 1}]}]
+         var who = jmsg[2]["PLAY"][0];
+         var num_drawn_cards = jmsg[2]["PLAY"][2];
+         var cards_picked = jmsg[2]["PLAY"][3];
+         if (cards_picked.length > 0) {
+            var span = createSpan(who + " picked ", "head2");
+            var card_rack = new CardRack(span, "", 25);
+            var cards = dirty7_cards_from_card_descs(card_rack, cards_picked, 1);
+            card_rack.append_cards(cards);
+            this.show_move_obj(span);
+         } else {
+            if (num_drawn_cards == 1) {
+               this.show_move_msg(who + " drew 1 card from the deck");
+            } else {
+               this.show_move_msg(who + " drew " + num_drawn_cards + " cards from the deck");
+            }
+         }
       }
 
    }
@@ -463,7 +511,7 @@ class Dirty7Room extends Ui {
 
       if (jmsg[0] == "JOIN-BAD") {
          room.login_bar.alias.focus();
-         alert("Bad name and password");
+         room.show_error_msg("Incorrect name or password");
 
       } else if (jmsg[0] == "JOIN-OKAY") {
          var alias = room.login_bar.alias_internal;
@@ -471,6 +519,7 @@ class Dirty7Room extends Ui {
             room.player_boards[alias].set_move_pane_visibility(room.last_msg_turn[2] == alias);
          }
          room.login_bar.hide();
+         room.show_info_msg("Player accepted");
 
       } else if (jmsg[0] == "TURN-ORDER") {
          room.maybe_update_round_num(jmsg[1]);
@@ -497,5 +546,14 @@ class Dirty7Room extends Ui {
          room.process_update(jmsg);
 
       }
+   }
+
+   /**
+    * Socket closure
+    */
+   onclose(ev) {
+      var room = this.cls_room;
+      // this = Network instance
+      room.show_error_msg("Disconnected");
    }
 }

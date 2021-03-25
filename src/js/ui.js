@@ -10,6 +10,10 @@ class Ui {
 
 // Helpers
 
+function set_title(txt) {
+   document.title = txt;
+}
+
 function clearContents(ele) {
    while (ele.firstChild) {
       ele.removeChild(ele.firstChild);
@@ -137,10 +141,15 @@ class Table {
    }
 
    // Accessors
-   cell(rowi, coli) {
+   row(rowi) {
       if (rowi < 0 || rowi >= this.tbody.childElementCount) { return null; }
+      return this.tbody.childNodes[rowi];
+   }
 
-      var row = this.tbody.childNodes[rowi];
+   cell(rowi, coli) {
+      var row = this.row(rowi);
+      if (!row) { return null; }
+
       if (coli < 0 || coli >= row.childElementCount) { return null; }
 
       return row.childNodes[coli];

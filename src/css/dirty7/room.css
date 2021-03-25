@@ -7,6 +7,41 @@
    overflow-x: hidden;
 }
 
+/* */
+.d7_notifications_table {
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   width: 100%;
+   z-index: 1000;
+   padding: 5px;
+   border-spacing: 10px;
+}
+
+.d7_notification_info {
+   background-color: rgba(200, 255, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+.d7_notification_move {
+   background-color: rgba(200, 200, 255, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+.d7_notification_error {
+   background-color: rgba(255, 200, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
 /* login bar related */
 
 .d7_login_bar {

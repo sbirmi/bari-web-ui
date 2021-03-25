@@ -92,7 +92,7 @@ class Dirty7Lobby extends Ui {
       this.player_count = createDropDown(this, "d7lobby_player_count",
          [1, 2, 3, 4], 2, "text");
       this.start_card_count = createDropDown(this, "d7lobby_start_card_count",
-         [4, 5, 6, 7, 8, 9, 10], 7, "text");
+         [1, 4, 5, 6, 7, 8, 9, 10], 7, "text");
       this.decl_point_limit = createDropDown(this, "d7lobby_point_limit",
          [0, 4, 5, 6, 7, 8, 9, 10], 7, "text");
       this.penalty_points = createDropDown(this, "d7lobby_penalty_points",
