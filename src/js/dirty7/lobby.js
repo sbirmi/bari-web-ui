@@ -89,7 +89,8 @@ class Dirty7Lobby extends Ui {
       this.host_table = new Table(this.outer_table.cell(1, 0), 0, 2, "width100");
       this.host_btn = createButton(this, "d7lobby_host_btn", "host", this.host_click, "text");
       this.rules = createDropDown(this, "d7lobby_rules",
-         ["basic"], "basic", "text");
+         ["basic", "basic+seq3", "basic+seq3plus"],
+         "basic", "text");
       this.player_count = createDropDown(this, "d7lobby_player_count",
          [1, 2, 3, 4, 5, 6, 7, 8], 2, "text");
       this.start_card_count = createDropDown(this, "d7lobby_start_card_count",
