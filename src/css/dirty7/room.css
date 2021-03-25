@@ -83,8 +83,14 @@
    height: 350px;
 }
 
+@keyframes d7_turn_blink {
+   0%, 100% { background-color: rgb(128, 255, 128); }
+   50%      { background-color: rgb(255, 128, 128); }
+}
+
 .d7_player_turn {
-   background-color: green;
+   border-radius: 15px;
+   animation: d7_turn_blink 3s infinite;
 }
 
 .d7_player_text_pane {

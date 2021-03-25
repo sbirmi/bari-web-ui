@@ -10,6 +10,7 @@
 
 # TODO
 
+1. roundscore cards shouldn't be clickable
 2. createDiv --> create_div etc
 3. cell_style --> set_cell_style()
 4. move_pane --> size & alignment
@@ -18,4 +19,3 @@
 7. player_info bottom align not working
 8. pause round on completion
 9. Notify of bad moves
-10. blink to show whose turn it is
