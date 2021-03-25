@@ -18,4 +18,4 @@
 6. Handle disconnects better
 7. player_info bottom align not working
 8. pause round on completion
-
+9. Notify of last move + bad moves
