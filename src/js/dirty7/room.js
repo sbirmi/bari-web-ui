@@ -40,6 +40,9 @@ class Dirty7LoginBar extends Dirty7UiBase {
                                       this.connect_click,
                                       "text");
 
+      this.alias.addEventListener("keyup", this.alias_keyup);
+      this.passwd.addEventListener("keyup", this.passwd_keyup);
+
 
       this.ui.appendChild(createSpan("Name", "d7_login_bar_text"));
       this.ui.appendChild(this.alias);
@@ -52,6 +55,23 @@ class Dirty7LoginBar extends Dirty7UiBase {
       this.parent_ui.appendChild(this.ui);
 
       this.alias.focus();
+   }
+
+   alias_keyup(ev) {
+      ev.preventDefault();
+      if (ev.keyCode === 13) {
+         var creator = ev.target.creator;
+         creator.passwd.focus();
+      }
+   }
+
+   passwd_keyup(ev) {
+      ev.preventDefault();
+      if (ev.keyCode === 13) {
+         var creator = ev.target.creator;
+         creator.connect_click(ev);
+         creator.alias.focus();
+      }
    }
 
    connect_click(ev) {
