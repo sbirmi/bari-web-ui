@@ -165,12 +165,12 @@ class Card {
 
 
 class CardRack {
-   constructor(parent_ui, id, overlap_x=0, overlap_y=0) {
+   constructor(parent_ui, id, shift_x=0, shift_y=0) {
       this.parent_ui = parent_ui;
       this.ui = createDiv(this, id, "card_rack");
       this.cards = [];
-      this.overlap_x = overlap_x;
-      this.overlap_y = overlap_y;
+      this.shift_x = shift_x;
+      this.shift_y = shift_y;
 
       this.parent_ui.appendChild(this.ui);
    }
@@ -189,8 +189,8 @@ class CardRack {
          card.ui.classList.add("card_rack_remaining");
       }
       this.ui.appendChild(card.ui);
-      card.shift_left(-1 * this.overlap_x * this.cards.length);
-      card.shift_up(this.overlap_y * this.cards.length);
+      card.shift_left(-1 * this.shift_x * this.cards.length);
+      card.shift_up(this.shift_y * this.cards.length);
       this.cards.push(card);
    }
    card(idx) {
