@@ -80,7 +80,6 @@
 
 .d7_player_board {
    width: 950px;
-   height: 350px;
 }
 
 @keyframes d7_turn_blink {

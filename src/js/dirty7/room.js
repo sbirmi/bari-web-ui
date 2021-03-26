@@ -180,7 +180,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
    }
    set_card_count(count) {
       while (this.card_rack.count() < count) {
-         this.card_rack.append_card(new Card(this.card_rack.ui, 0, 0, true));
+         this.card_rack.append_card(new Card(this.card_rack.ui, 0, 0, true, 1));
       }
       if (this.card_rack.count() > count) {
          this.card_rack.remove_tail_cards(count);
