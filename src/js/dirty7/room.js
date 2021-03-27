@@ -75,11 +75,17 @@ class Dirty7LoginBar extends Dirty7UiBase {
    }
 
    connect_click(ev) {
-      var login_bar = ev.target.creator;
+      var login_bar = ev ? ev.target.creator : this;
       login_bar.alias_internal = login_bar.alias.value;
       var passwd = login_bar.passwd.value;
 
       login_bar.nw.send(["JOIN", login_bar.alias_internal, passwd]);
+   }
+
+   maybe_rejoin() {
+      if (this.alias.value) {
+         this.connect_click();
+      }
    }
 }
 
@@ -88,6 +94,21 @@ class Dirty7GameOver extends Dirty7UiBase {
       super(room, nw, parent_ui);
       this.ui = createSpan("Game over", "width100 head1 d7_game_over");
       this.parent_ui.appendChild(this.ui);
+   }
+}
+
+class Dirty7Disconnected extends Dirty7UiBase {
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui);
+      this.ui = createSpan("Disconnected", "width100 head1 d7_disconnected");
+      this.reconnect_btn = createButton(this, "", "Reconnect", this.reconnect_click, "head2");
+      this.ui.appendChild(this.reconnect_btn);
+      this.parent_ui.appendChild(this.ui);
+   }
+
+   reconnect_click(ev) {
+      var disconnected_bar = ev.target.creator;
+      disconnected_bar.nw.new_connection();
    }
 }
 
@@ -364,7 +385,8 @@ class Dirty7Room extends Ui {
 
       this.nw = new Network("NwDirty7:" + gid, "dirty7:" + gid,
                             this.onmessage,
-                            this.onclose);
+                            this.onclose,
+                            this.onopen);
       this.nw.cls_room = this;
       this.game_over = false;
 
@@ -379,6 +401,8 @@ class Dirty7Room extends Ui {
    init_display() {
       this.ui_notifications = new UiNotifications(this.div, 2000, "d7_notifications_table");
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
+      this.disconnected_bar = new Dirty7Disconnected(this, this.nw, this.div);
+      this.disconnected_bar.hide();
       this.game_over_bar = new Dirty7GameOver(this, this.nw, this.div);
       this.game_over_bar.hide();
       this.board = new Dirty7Board(this, this.nw, this.div);
@@ -607,11 +631,18 @@ class Dirty7Room extends Ui {
    }
 
    /**
-    * Socket closure
+    * Other socket events
     */
    onclose(ev) {
       var room = this.cls_room;
       // this = Network instance
       room.show_error_msg("Disconnected");
+      room.disconnected_bar.show();
+   }
+
+   onopen(ev) {
+      var room = this.cls_room;
+      room.disconnected_bar.hide();
+      room.login_bar.maybe_rejoin();
    }
 }

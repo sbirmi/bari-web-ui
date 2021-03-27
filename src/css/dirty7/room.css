@@ -7,7 +7,15 @@
    overflow-x: hidden;
 }
 
-/* game over related */
+/* banners related */
+.d7_disconnected {
+   text-align: center;
+   padding: 15px;
+   background-color: rgb(200, 200, 200);
+   margin-top: 10px;
+   margin-bottom: 10px;
+}
+
 .d7_game_over {
    text-align: center;
    padding: 15px;

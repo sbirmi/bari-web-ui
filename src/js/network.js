@@ -14,8 +14,17 @@ class Network {
       var ws_port = ui_port + 1;
       this.sock_url = "ws://" + domain + ":" + ws_port + "/" + dest;
 
-
+      this.sock = null;
       console.log(this.name + " = WebSocket " + this.sock_url);
+
+      this.new_connection();
+   }
+
+   new_connection() {
+      if (this.sock) {
+         this.sock.close();
+      }
+
       this.sock = new WebSocket(this.sock_url);
       this.sock.cls_nw = this;
 
@@ -45,6 +54,7 @@ class Network {
          }
       }
    }
+
    send(obj) {
       var data = JSON.stringify(obj);
       console.log(this.sock.cls_nw.name + " TX: " + data);
