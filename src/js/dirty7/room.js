@@ -69,8 +69,8 @@ class Dirty7LoginBar extends Dirty7UiBase {
       ev.preventDefault();
       if (ev.keyCode === 13) {
          var creator = ev.target.creator;
+         creator.connect_btn.focus();
          creator.connect_click(ev);
-         creator.alias.focus();
       }
    }
 
@@ -154,8 +154,8 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
 
       this.move_pane = player_info.cell(1, 0);
       player_info.cell_class(1, 0, "bottom center");
-      this.play_btn = createButton(this, "", "Play", this.play_click, "text");
-      this.declare_btn = createButton(this, "", "Declare", this.declare_click, "text");
+      this.play_btn = createButton(this, "", "Play", this.play_click, "text d7_player_turn_btn");
+      this.declare_btn = createButton(this, "", "Declare", this.declare_click, "text d7_player_turn_btn");
       this.move_pane.appendChild(this.play_btn);
       this.move_pane.appendChild(this.declare_btn);
       this.set_move_pane_visibility(room.last_msg_turn && room.last_msg_turn[2] == alias);
@@ -172,10 +172,11 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
    }
    set_has_turn(val) {
       this.has_turn = val;
+      var ele = this.container_table.cell(0, 0);
       if (this.has_turn) {
-         this.ui.classList.add("d7_player_turn");
+         ele.classList.add("d7_player_turn");
       } else {
-         this.ui.classList.remove("d7_player_turn");
+         ele.classList.remove("d7_player_turn");
       }
    }
    set_card_count(count) {
@@ -209,7 +210,6 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
    update_ui() {
       clearContents(this.player_pane);
       this.player_pane.appendChild(createSpan(this.alias, "head2"));
-      this.p
    }
 }
 
@@ -559,6 +559,7 @@ class Dirty7Room extends Ui {
       if (jmsg[0] == "JOIN-BAD") {
          room.login_bar.alias.focus();
          room.show_error_msg(jmsg[1]);
+         room.login_bar.alias.focus();
 
       } else if (jmsg[0] == "JOIN-OKAY") {
          var alias = room.login_bar.alias_internal;
@@ -593,6 +594,9 @@ class Dirty7Room extends Ui {
          room.process_update(jmsg);
 
       } else if (jmsg[0] == "PLAY-BAD") {
+         room.show_error_msg(jmsg[1]);
+
+      } else if (jmsg[0] == "DECLARE-BAD") {
          room.show_error_msg(jmsg[1]);
 
       } else if (jmsg[0] == "GAME-OVER") {

@@ -35,7 +35,7 @@ class CardThemeBase {
 
 class CardTheme extends CardThemeBase {
    constructor() {
-      super("/assets/cards/", ".svg", "card_big");
+      super("/assets/cards/", ".png", "card_big");
    }
 }
 
