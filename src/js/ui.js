@@ -20,6 +20,15 @@ function clearContents(ele) {
    }
 }
 
+function createCheckbox(creator, id, checked=false) {
+   var ele = document.createElement("input");
+   ele.type = "checkbox";
+   ele.creator = creator;
+   ele.checked = checked;
+   ele.id = id;
+   return ele;
+}
+
 function createLineBreak() {
    return document.createElement("br");
 }

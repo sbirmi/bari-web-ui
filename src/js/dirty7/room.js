@@ -89,6 +89,32 @@ class Dirty7LoginBar extends Dirty7UiBase {
    }
 }
 
+class Dirty7RoundParameters extends Dirty7UiBase {
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui);
+      this.round_num = null;
+      this.round_params = null;
+
+      this.ui = createSpan("", "head2 d7_round_params");
+      parent_ui.appendChild(this.ui);
+
+      this.hide();
+   }
+
+   set_round_parameters(round_num, round_params) {
+      if (this.room.game_over) {
+         this.hide();
+         return;
+      }
+      this.show();
+      this.round_num = round_num;
+      this.round_params = round_params;
+      clearContents(this.ui);
+      this.ui.appendChild(createSpan(
+         "[" + this.round_num + "] " + this.round_params["ruleNames"][0]));
+   }
+}
+
 class Dirty7GameOver extends Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui);
@@ -182,7 +208,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
       this.set_move_pane_visibility(room.last_msg_turn && room.last_msg_turn[2] == alias);
 
       // Cards pane
-      this.card_rack = new CardRack(this.container_table.cell(0, 1), "", 40);
+      this.card_rack = new CardRack(this.container_table.cell(0, 1), "", 50);
 
       this.ui = parent_ui.appendChild(this.container_table.ui);
 
@@ -403,6 +429,7 @@ class Dirty7Room extends Ui {
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
       this.disconnected_bar = new Dirty7Disconnected(this, this.nw, this.div);
       this.disconnected_bar.hide();
+      this.round_params = new Dirty7RoundParameters(this, this.nw, this.div);
       this.game_over_bar = new Dirty7GameOver(this, this.nw, this.div);
       this.game_over_bar.hide();
       this.board = new Dirty7Board(this, this.nw, this.div);
@@ -575,6 +602,13 @@ class Dirty7Room extends Ui {
       this.login_bar.hide();
       this.board.hide();
       this.game_over_bar.show();
+      this.round_params.hide();
+   }
+
+   process_round_parameters(jmsg) {
+      if (this.is_old_round(jmsg[1])) { return; }
+
+      this.round_params.set_round_parameters(jmsg[1], jmsg[2]);
    }
 
    onmessage(jmsg) {
@@ -626,6 +660,15 @@ class Dirty7Room extends Ui {
       } else if (jmsg[0] == "GAME-OVER") {
          room.maybe_update_round_num(jmsg[1]);
          room.process_game_over(jmsg);
+
+      } else if (jmsg[0] == "ROUND-PARAMETERS") {
+         room.maybe_update_round_num(jmsg[1]);
+         room.process_round_parameters(jmsg);
+
+      } else {
+         var msg = "Unhandled message: " + JSON.stringify(jmsg);
+         console.log(msg);
+         room.show_error_msg(msg);
 
       }
    }

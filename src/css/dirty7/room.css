@@ -7,6 +7,18 @@
    overflow-x: hidden;
 }
 
+/* round parameters */
+.d7_round_params {
+   position: absolute;
+   top: 0px;
+   left: 0px;
+   width: 250px;
+
+   background-color: orange;
+   padding: 5px;
+   border-radius: 0px 0px 10px 0px;
+}
+
 /* banners related */
 .d7_disconnected {
    text-align: center;
