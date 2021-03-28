@@ -33,10 +33,10 @@ class Dirty7LoginBar extends Dirty7UiBase {
 
       this.alias_internal = "";
 
-      this.ui = createDiv(this, "", "d7_login_bar text");
-      this.alias = createInputText(this, "", "d7_login_bar_input text");
-      this.passwd = createInputPassword(this, "", "d7_login_bar_input text");
-      this.connect_btn = createButton(this, "", "Connect",
+      this.ui = create_div(this, "", "d7_login_bar text");
+      this.alias = create_input_text(this, "", "d7_login_bar_input text");
+      this.passwd = create_input_password(this, "", "d7_login_bar_input text");
+      this.connect_btn = create_button(this, "", "Connect",
                                       this.connect_click,
                                       "text");
 
@@ -44,10 +44,10 @@ class Dirty7LoginBar extends Dirty7UiBase {
       this.passwd.addEventListener("keyup", this.passwd_keyup);
 
 
-      this.ui.appendChild(createSpan("Name", "d7_login_bar_text"));
+      this.ui.appendChild(create_span("Name", "d7_login_bar_text"));
       this.ui.appendChild(this.alias);
 
-      this.ui.appendChild(createSpan("Password", "d7_login_bar_text"));
+      this.ui.appendChild(create_span("Password", "d7_login_bar_text"));
       this.ui.appendChild(this.passwd);
 
       this.ui.appendChild(this.connect_btn);
@@ -95,7 +95,7 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_num = null;
       this.round_params = null;
 
-      this.ui = createSpan("", "head2 d7_round_params");
+      this.ui = create_span("", "head2 d7_round_params");
       parent_ui.appendChild(this.ui);
 
       this.hide();
@@ -109,8 +109,8 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.show();
       this.round_num = round_num;
       this.round_params = round_params;
-      clearContents(this.ui);
-      this.ui.appendChild(createSpan(
+      clear_contents(this.ui);
+      this.ui.appendChild(create_span(
          "[" + this.round_num + "] " + this.round_params["ruleNames"][0]));
    }
 }
@@ -118,7 +118,7 @@ class Dirty7RoundParameters extends Dirty7UiBase {
 class Dirty7GameOver extends Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui);
-      this.ui = createSpan("Game over", "width100 head1 d7_game_over");
+      this.ui = create_span("Game over", "width100 head1 d7_game_over");
       this.parent_ui.appendChild(this.ui);
    }
 }
@@ -126,8 +126,8 @@ class Dirty7GameOver extends Dirty7UiBase {
 class Dirty7Disconnected extends Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui);
-      this.ui = createSpan("Disconnected", "width100 head1 d7_disconnected");
-      this.reconnect_btn = createButton(this, "", "Reconnect", this.reconnect_click, "head2");
+      this.ui = create_span("Disconnected", "width100 head1 d7_disconnected");
+      this.reconnect_btn = create_button(this, "", "Reconnect", this.reconnect_click, "head2");
       this.ui.appendChild(this.reconnect_btn);
       this.parent_ui.appendChild(this.ui);
    }
@@ -201,8 +201,8 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
 
       this.move_pane = player_info.cell(1, 0);
       player_info.cell_class(1, 0, "bottom center");
-      this.play_btn = createButton(this, "", "Play", this.play_click, "text d7_player_turn_btn");
-      this.declare_btn = createButton(this, "", "Declare", this.declare_click, "text d7_player_turn_btn");
+      this.play_btn = create_button(this, "", "Play", this.play_click, "text d7_player_turn_btn");
+      this.declare_btn = create_button(this, "", "Declare", this.declare_click, "text d7_player_turn_btn");
       this.move_pane.appendChild(this.play_btn);
       this.move_pane.appendChild(this.declare_btn);
       this.set_move_pane_visibility(room.last_msg_turn && room.last_msg_turn[2] == alias);
@@ -255,8 +255,8 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
       room.nw.send(jmsg);
    }
    update_ui() {
-      clearContents(this.player_pane);
-      this.player_pane.appendChild(createSpan(this.alias, "head2"));
+      clear_contents(this.player_pane);
+      this.player_pane.appendChild(create_span(this.alias, "head2"));
    }
 }
 
@@ -298,10 +298,10 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
          this.container_table.cell_class(0, idx + 1, "d7_score_board_header");
          this.container_table.cell_content_add(0, idx + 1,
-                                               createSpan(alias, "head2"));
+                                               create_span(alias, "head2"));
 
          this.container_table.cell_class(1, idx + 1, "right d7_score_board_total");
-         this.container_table.cell_content_add(1, idx + 1, createSpan("0", "text"));
+         this.container_table.cell_content_add(1, idx + 1, create_span("0", "text"));
       }
    }
 
@@ -320,7 +320,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
       var inner_table = this.cell_inner_table[round_num][idx + 1];
       var player_card_cell = inner_table.cell(0, 0);
-      clearContents(player_card_cell);
+      clear_contents(player_card_cell);
 
       var card_rack = new CardRack(player_card_cell, "", 25);
       var cards = dirty7_cards_from_card_descs(card_rack, card_descs, 1, null);
@@ -331,14 +331,14 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       this.container_table.add_row(null, round_num);
 
       this.container_table.cell_content_add(round_num, 0,
-                                            createSpan("" + round_num, "text"));
+                                            create_span("" + round_num, "text"));
 
       this.cell_inner_table[round_num] = [];
       for (var i=1; i < this.container_table.num_cols; ++i) {
          this.cell_inner_table[round_num][i] = new Table(this.container_table.cell(round_num, i),
                                      1, 2, "d7_score_board_inner_table width100");
          this.cell_inner_table[round_num][i].cell_class(0, 1, "right");
-         this.cell_inner_table[round_num][i].cell_content_set(0, 1, createSpan("", "text"));
+         this.cell_inner_table[round_num][i].cell_content_set(0, 1, create_span("", "text"));
       }
 
       // Review player card data queued in
@@ -375,7 +375,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
          var score = data[alias];
          if (score != null) {
             this.cell_inner_table[round_num][idx + 1].cell_content_set(0, 1,
-               createSpan("" + score, "text"));
+               create_span("" + score, "text"));
          }
       }
 
@@ -398,7 +398,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
          this.container_table.cell_content_set(this.highest_round_num_seen + 1,
                                                idx + 1,
-                                               createSpan("" + total, "text"));
+                                               create_span("" + total, "text"));
       }
    }
 }
@@ -434,7 +434,7 @@ class Dirty7Room extends Ui {
       this.game_over_bar.hide();
       this.board = new Dirty7Board(this, this.nw, this.div);
 
-      this.player_boards_holder = this.div.appendChild(createDiv(this, "floatleft"));
+      this.player_boards_holder = this.div.appendChild(create_div(this, "floatleft"));
       this.player_boards = {};
 
       this.score_board = new Dirty7ScoreBoard(this, this.nw, this.div);
@@ -445,17 +445,17 @@ class Dirty7Room extends Ui {
     * UI helpers
     */
    show_error_msg(msg) {
-      var obj = createSpan(msg, "head2");
+      var obj = create_span(msg, "head2");
       this.ui_notifications.add_msg(obj, "d7_notification_error");
    }
 
    show_info_msg(msg) {
-      var obj = createSpan(msg, "head2");
+      var obj = create_span(msg, "head2");
       this.ui_notifications.add_msg(obj, "d7_notification_info");
    }
 
    show_move_msg(msg) {
-      var obj = createSpan(msg, "head2");
+      var obj = create_span(msg, "head2");
       this.ui_notifications.add_msg(obj, "d7_notification_move");
    }
 
@@ -576,7 +576,7 @@ class Dirty7Room extends Ui {
          var num_drawn_cards = jmsg[2]["PLAY"][2];
          var cards_picked = jmsg[2]["PLAY"][3];
          if (cards_picked.length > 0) {
-            var span = createSpan(who + " picked ", "head2");
+            var span = create_span(who + " picked ", "head2");
             var card_rack = new CardRack(span, "", 25);
             var cards = dirty7_cards_from_card_descs(card_rack, cards_picked, 1, null);
             card_rack.append_cards(cards);

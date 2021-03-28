@@ -83,34 +83,34 @@ class Dirty7Lobby extends Ui {
       // Outer table
       this.outer_table = new Table(this.div, 2, 1);
       this.outer_table.cell_class(0, 0, "dirty7lobby_title head1");
-      this.outer_table.cell_content_add(0, 0, createSpan("Dirty7 Lobby"));
+      this.outer_table.cell_content_add(0, 0, create_span("Dirty7 Lobby"));
 
       // Host table
       this.host_table = new Table(this.outer_table.cell(1, 0), 0, 2, "width100");
-      this.host_btn = createButton(this, "d7lobby_host_btn", "host", this.host_click, "text");
-      this.player_count = createDropDown(this, "d7lobby_player_count",
+      this.host_btn = create_button(this, "d7lobby_host_btn", "host", this.host_click, "text");
+      this.player_count = create_drop_down(this, "d7lobby_player_count",
          [1, 2, 3, 4, 5, 6, 7, 8], 2, "text");
-      this.start_card_count = createDropDown(this, "d7lobby_start_card_count",
+      this.start_card_count = create_drop_down(this, "d7lobby_start_card_count",
          [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 7, "text");
-      this.decl_point_limit = createDropDown(this, "d7lobby_point_limit",
+      this.decl_point_limit = create_drop_down(this, "d7lobby_point_limit",
          [1, 7, 10, 20, 30, 40, 999], 7, "text");
-      this.penalty_points = createDropDown(this, "d7lobby_penalty_points",
+      this.penalty_points = create_drop_down(this, "d7lobby_penalty_points",
          [20, 40, 60, 80,100], 40, "text");
-      this.game_end_points = createDropDown(this, "d7lobby_game_end_points",
-         [0, 50, 100, 150, 200, 250, 300], 100, "text");
-      this.deck_count = createDropDown(this, "d7lobby_deck_count",
+      this.game_end_points = create_drop_down(this, "d7lobby_game_end_points",
+         [1, 50, 100, 150, 200, 250, 300], 100, "text");
+      this.deck_count = create_drop_down(this, "d7lobby_deck_count",
          [1, 2], 1, "text");
-      this.joker_count = createDropDown(this, "d7lobby_joker_count",
+      this.joker_count = create_drop_down(this, "d7lobby_joker_count",
          [0, 1, 2, 3, 4], 0, "text");
 
       this.host_table.add_row([
-         createSpan("Start a new room", "head2"),
+         create_span("Start a new room", "head2"),
          this.host_btn]);
 
       // Rules row
       var rule_rowi = 1;
       this.host_table.add_row();
-      this.host_table.cell(rule_rowi, 0).appendChild(createSpan("Rules", "text"));
+      this.host_table.cell(rule_rowi, 0).appendChild(create_span("Rules", "text"));
 
       this.rules = [];
       var rule_choices = [["basic", "Basic"],
@@ -119,36 +119,36 @@ class Dirty7Lobby extends Ui {
                           ["seq3", "Seq 3"],
                           ["seq3plus", "Seq 3+"]];
       for (var rule_choice of rule_choices) {
-         var div = createDiv(this, "");
-         var ele = createCheckbox(this, "");
+         var div = create_div(this, "");
+         var ele = create_checkbox(this, "");
          ele.rule_name = rule_choice[0];
          div.appendChild(ele);
-         div.appendChild(createSpan(rule_choice[1]));
+         div.appendChild(create_span(rule_choice[1]));
          this.rules.push(ele);
          this.host_table.cell(1, 1).appendChild(div);
       }
       this.rules[0].checked = true;
 
       this.host_table.add_row([
-         createSpan("Players", "text"),
+         create_span("Players", "text"),
          this.player_count]);
       this.host_table.add_row([
-         createSpan("Start card count", "text"),
+         create_span("Start card count", "text"),
          this.start_card_count]);
       this.host_table.add_row([
-         createSpan("Declare under points", "text"),
+         create_span("Declare under points", "text"),
          this.decl_point_limit]);
       this.host_table.add_row([
-         createSpan("Penalty points", "text"),
+         create_span("Penalty points", "text"),
          this.penalty_points]);
       this.host_table.add_row([
-         createSpan("Game end points", "text"),
+         create_span("Game end points", "text"),
          this.game_end_points]);
       this.host_table.add_row([
-         createSpan("Deck count", "text"),
+         create_span("Deck count", "text"),
          this.deck_count]);
       this.host_table.add_row([
-         createSpan("Joker count", "text"),
+         create_span("Joker count", "text"),
          this.joker_count]);
 
       // Right align right column except the Rules row
@@ -162,23 +162,23 @@ class Dirty7Lobby extends Ui {
 
       // Existing rooms
       this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1);
-      this.existing_table.cell_content_add(0, 0, createSpan("Existing rooms", "head2"));
+      this.existing_table.cell_content_add(0, 0, create_span("Existing rooms", "head2"));
    }
 
    show_error_msg(msg) {
-      var obj = createSpan(msg, "head2");
+      var obj = create_span(msg, "head2");
       this.notifications.add_msg(obj, "notification_error");
    }
 
    update_row(row, gid, rcvd_status) {
       // row already has 1 cell. clear contents and add new status
       var cell = row.childNodes[0];
-      clearContents(cell);
+      clear_contents(cell);
 
-      var a = createLink("/dirty7/" + gid,
-                         createSpan("Dirty7:" + gid, "text"));
+      var a = create_link("/dirty7/" + gid,
+                         create_span("Dirty7:" + gid, "text"));
       cell.appendChild(a);
-      cell.appendChild(createSpan(" " + rcvd_status[0]["gameState"], "text"));
+      cell.appendChild(create_span(" " + rcvd_status[0]["gameState"], "text"));
 
       // [{"gameState": "WaitingForPlayers",
       //   "clientCount": {"foo": 1},
@@ -202,23 +202,23 @@ class Dirty7Lobby extends Ui {
       //  {"ruleNames": ["basic"], "numPlayers": 2, "numDecks": 1, "numJokers": 0, "numCardsToStart": 7, "declareMaxPoints": 7, "penaltyPoints": 40, "stopPoints": 100}]
 
       if (d7_ele_count(rcvd_status[0]["clientCount"]) > 0) {
-         cell.appendChild(createLineBreak());
-         cell.appendChild(createSpan("Players: ", "text"));
+         cell.appendChild(create_line_break());
+         cell.appendChild(create_span("Players: ", "text"));
          var first = true;
          for (var alias in rcvd_status[0]["clientCount"]) {
-            cell.appendChild(createSpan((first ? "" : ", " ) + alias, "text"));
+            cell.appendChild(create_span((first ? "" : ", " ) + alias, "text"));
             first = false;
          }
       }
 
       if (rcvd_status[0]["gameState"] != "WaitingForPlayers") {
          // Show round number
-         cell.appendChild(createLineBreak());
-         cell.appendChild(createSpan("Round #" + rcvd_status[3]));
+         cell.appendChild(create_line_break());
+         cell.appendChild(create_span("Round #" + rcvd_status[3]));
       }
       function add_params(msg, key) {
-         cell.appendChild(createLineBreak());
-         cell.appendChild(createSpan(msg + ": " + rcvd_status[2][key]));
+         cell.appendChild(create_line_break());
+         cell.appendChild(create_span(msg + ": " + rcvd_status[2][key]));
       }
       add_params("Rules", "ruleNames");
       add_params("Players", "numPlayers");

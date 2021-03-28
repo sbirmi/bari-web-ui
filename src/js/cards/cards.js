@@ -68,7 +68,7 @@ class Card {
       this.click_action = null;
       this.cb = null;
 
-      this.ui = createImg(this, "", this.card_theme.cls);
+      this.ui = create_img(this, "", this.card_theme.cls);
       this.parent_ui.appendChild(this.ui);
 
       this.update_ui();
@@ -167,7 +167,7 @@ class Card {
 class CardRack {
    constructor(parent_ui, id, shift_x=0, shift_y=0) {
       this.parent_ui = parent_ui;
-      this.ui = createDiv(this, id, "card_rack");
+      this.ui = create_div(this, id, "card_rack");
       this.cards = [];
       this.shift_x = shift_x;
       this.shift_y = shift_y;

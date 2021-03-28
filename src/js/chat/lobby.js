@@ -39,28 +39,28 @@ class ChatLobby extends Ui {
       // Outer table
       this.outer_table = new Table(this.div, 2, 1);
       this.outer_table.cell_class(0, 0, "chatlobby_title head1");
-      this.outer_table.cell_content_add(0, 0, createSpan("Chat Lobby"));
+      this.outer_table.cell_content_add(0, 0, create_span("Chat Lobby"));
 
       // Host table
       this.host_table = new Table(this.outer_table.cell(1, 0), 1, 2, "width100");
-      this.host_table.cell_content_add(0, 0, createSpan("Start a new room", "head2"));
+      this.host_table.cell_content_add(0, 0, create_span("Start a new room", "head2"));
       this.host_table.cell_class(0, 1, "right");
-      this.host_btn = createButton(this, "chatlobby_host_btn", "host", this.host_click, "text");
+      this.host_btn = create_button(this, "chatlobby_host_btn", "host", this.host_click, "text");
       this.host_table.cell_content_add(0, 1, this.host_btn);
 
 
       // Existing rooms
       this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1);
-      this.existing_table.cell_content_add(0, 0, createSpan("Existing rooms", "head2"));
+      this.existing_table.cell_content_add(0, 0, create_span("Existing rooms", "head2"));
    }
    update_row(row, gid, rcvd_status) {
       // row already has 1 cell. clear contents and add new status
       var cell = row.childNodes[0];
-      clearContents(cell);
+      clear_contents(cell);
 
-      var a = createLink("/chat/" + gid, createSpan("Chat:" + gid, "text"), true);
+      var a = create_link("/chat/" + gid, create_span("Chat:" + gid, "text"), true);
       cell.appendChild(a);
-      cell.appendChild(createSpan(" (" + rcvd_status["clients"] + " clients)", "text"));
+      cell.appendChild(create_span(" (" + rcvd_status["clients"] + " clients)", "text"));
    }
    onmessage(obj) {
       // this = Network instance

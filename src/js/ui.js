@@ -14,13 +14,13 @@ function set_title(txt) {
    document.title = txt;
 }
 
-function clearContents(ele) {
+function clear_contents(ele) {
    while (ele.firstChild) {
       ele.removeChild(ele.firstChild);
    }
 }
 
-function createCheckbox(creator, id, checked=false) {
+function create_checkbox(creator, id, checked=false) {
    var ele = document.createElement("input");
    ele.type = "checkbox";
    ele.creator = creator;
@@ -29,11 +29,11 @@ function createCheckbox(creator, id, checked=false) {
    return ele;
 }
 
-function createLineBreak() {
+function create_line_break() {
    return document.createElement("br");
 }
 
-function createButton(creator, id, value, clickcb="", cls="") {
+function create_button(creator, id, value, clickcb="", cls="") {
    // How is onclick registered?
    var ele = document.createElement("input");
    ele.type = "button";
@@ -45,14 +45,14 @@ function createButton(creator, id, value, clickcb="", cls="") {
    return ele;
 }
 
-function createDiv(creator, id, cls="") {
+function create_div(creator, id, cls="") {
    var ele = document.createElement("div");
    ele.creator = creator;
    ele.className = cls;
    return ele;
 }
 
-function createDropDown(creator, id, values, def_value, cls="") {
+function create_drop_down(creator, id, values, def_value, cls="") {
    var ele = document.createElement("select");
    ele.creator = creator;
    ele.id = id;
@@ -72,7 +72,7 @@ function createDropDown(creator, id, values, def_value, cls="") {
    return ele;
 }
 
-function createImg(creator, src, cls="") {
+function create_img(creator, src, cls="") {
    var ele = document.createElement("img");
    ele.creator = creator;
    ele.src = src;
@@ -81,7 +81,7 @@ function createImg(creator, src, cls="") {
    return ele;
 }
 
-function createInputPassword(creator, id, cls="") {
+function create_input_password(creator, id, cls="") {
    var ele = document.createElement("input");
    ele.creator = creator;
    ele.id = id;
@@ -91,7 +91,7 @@ function createInputPassword(creator, id, cls="") {
    return ele;
 }
 
-function createInputText(creator, id, cls="") {
+function create_input_text(creator, id, cls="") {
    var ele = document.createElement("input");
    ele.creator = creator;
    ele.id = id;
@@ -100,7 +100,7 @@ function createInputText(creator, id, cls="") {
    return ele;
 }
 
-function createLink(link, body, blank=false) {
+function create_link(link, body, blank=false) {
    var ele = document.createElement("a");
    ele.href = link;
    ele.appendChild(body);
@@ -110,7 +110,7 @@ function createLink(link, body, blank=false) {
    return ele;
 }
 
-function createSpan(txt_or_ele, cls=null) {
+function create_span(txt_or_ele, cls=null) {
    var ele = document.createElement("span");
    if (typeof txt_or_ele === "string") {
       ele.innerHTML = txt_or_ele;
@@ -191,7 +191,7 @@ class Table {
    }
 
    cell_content_set(ri, ci, obj) {
-      clearContents(this.cell(ri, ci));
+      clear_contents(this.cell(ri, ci));
       this.cell(ri, ci).appendChild(obj);
    }
 
