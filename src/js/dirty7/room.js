@@ -198,6 +198,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
                                   2, 1, "d7_player_info height100");
       player_info.cell_class(0, 0, "top");
       this.player_pane = player_info.cell(0, 0);
+      player_info.cell_class(0, 0, "center");
 
       this.move_pane = player_info.cell(1, 0);
       player_info.cell_class(1, 0, "bottom center");
