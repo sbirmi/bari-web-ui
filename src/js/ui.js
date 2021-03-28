@@ -132,7 +132,7 @@ class Table {
       this.num_cols = num_cols;
 
       this.ui = document.createElement("table");
-      // this.ui.className = ''; // CSS style
+      this.ui.className = cls;
 
       this.tbody = document.createElement("tbody");
 

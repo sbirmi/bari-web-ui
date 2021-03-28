@@ -211,7 +211,7 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
       // Cards pane
       this.card_rack = new CardRack(this.container_table.cell(0, 1), "", 50);
 
-      this.ui = parent_ui.appendChild(this.container_table.ui);
+      this.ui = this.room.player_boards_holder.add_row([this.container_table.ui]);
 
       this.update_ui();
    }
@@ -435,7 +435,7 @@ class Dirty7Room extends Ui {
       this.game_over_bar.hide();
       this.board = new Dirty7Board(this, this.nw, this.div);
 
-      this.player_boards_holder = this.div.appendChild(create_div(this, "floatleft"));
+      this.player_boards_holder = new Table(this.div, 0, 1, "floatleft");
       this.player_boards = {};
 
       this.score_board = new Dirty7ScoreBoard(this, this.nw, this.div);
