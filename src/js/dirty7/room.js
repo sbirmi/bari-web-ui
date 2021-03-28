@@ -426,7 +426,7 @@ class Dirty7Room extends Ui {
     * by showing the login bar at the top
     */
    init_display() {
-      this.ui_notifications = new UiNotifications(this.div, 2000, "d7_notifications_table");
+      this.ui_notifications = new UiNotifications(this.div, 3000, "d7_notifications_table");
       this.login_bar = new Dirty7LoginBar(this, this.nw, this.div);
       this.disconnected_bar = new Dirty7Disconnected(this, this.nw, this.div);
       this.disconnected_bar.hide();
@@ -439,6 +439,12 @@ class Dirty7Room extends Ui {
       this.player_boards = {};
 
       this.score_board = new Dirty7ScoreBoard(this, this.nw, this.div);
+
+      document.notifications_ui = this.ui_notifications.ui;
+
+      document.onscroll = function(ev) {
+         ev.target.notifications_ui.style.top = window.pageYOffset + "px";
+      }
    }
 
 
