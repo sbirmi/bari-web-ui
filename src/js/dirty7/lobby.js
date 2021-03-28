@@ -88,9 +88,6 @@ class Dirty7Lobby extends Ui {
       // Host table
       this.host_table = new Table(this.outer_table.cell(1, 0), 0, 2, "width100");
       this.host_btn = createButton(this, "d7lobby_host_btn", "host", this.host_click, "text");
-      this.rules = createDropDown(this, "d7lobby_rules",
-         ["basic", "basic+seq3", "basic+seq3plus", "seq3", "seq3plus"],
-         "basic", "text");
       this.player_count = createDropDown(this, "d7lobby_player_count",
          [1, 2, 3, 4, 5, 6, 7, 8], 2, "text");
       this.start_card_count = createDropDown(this, "d7lobby_start_card_count",
@@ -109,9 +106,29 @@ class Dirty7Lobby extends Ui {
       this.host_table.add_row([
          createSpan("Start a new room", "head2"),
          this.host_btn]);
-      this.host_table.add_row([
-         createSpan("Rules", "text"),
-         this.rules]);
+
+      // Rules row
+      var rule_rowi = 1;
+      this.host_table.add_row();
+      this.host_table.cell(rule_rowi, 0).appendChild(createSpan("Rules", "text"));
+
+      this.rules = [];
+      var rule_choices = [["basic", "Basic"],
+                          ["basic+seq3", "Basic, seq 3"],
+                          ["basic+seq3plus", "Basic, seq 3+"],
+                          ["seq3", "Seq 3"],
+                          ["seq3plus", "Seq 3+"]];
+      for (var rule_choice of rule_choices) {
+         var div = createDiv(this, "");
+         var ele = createCheckbox(this, "");
+         ele.rule_name = rule_choice[0];
+         div.appendChild(ele);
+         div.appendChild(createSpan(rule_choice[1]));
+         this.rules.push(ele);
+         this.host_table.cell(1, 1).appendChild(div);
+      }
+      this.rules[0].checked = true;
+
       this.host_table.add_row([
          createSpan("Players", "text"),
          this.player_count]);
@@ -134,10 +151,12 @@ class Dirty7Lobby extends Ui {
          createSpan("Joker count", "text"),
          this.joker_count]);
 
-      // Right align right column
+      // Right align right column except the Rules row
       for (var i=0; i < 9; ++i) {
          this.host_table.cell_class(i, 1, "right");
       }
+      this.host_table.cell_class(rule_rowi, 1, "left top");
+      this.host_table.cell_class(rule_rowi, 1, "left");
 
 // XXX review everything after here
 
@@ -148,7 +167,6 @@ class Dirty7Lobby extends Ui {
 
    show_error_msg(msg) {
       var obj = createSpan(msg, "head2");
-      console.log(this);
       this.notifications.add_msg(obj, "notification_error");
    }
 
@@ -238,8 +256,14 @@ class Dirty7Lobby extends Ui {
    }
    host_click(ev) {
       var lobby = ev.target.creator;
+      var rule_names = [];
+      for (var rule of lobby.rules) {
+         if (rule.checked) {
+            rule_names.push(rule.rule_name);
+         }
+      }
       var msg = ["HOST", "dirty7",
-         [lobby.rules.value],
+         rule_names,
          Number(lobby.player_count.value),
          Number(lobby.deck_count.value),
          Number(lobby.joker_count.value),
