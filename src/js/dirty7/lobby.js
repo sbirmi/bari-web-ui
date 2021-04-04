@@ -126,20 +126,20 @@ class Dirty7Lobby extends Ui {
 
       this.rules = [];
       var rule_choices = [["basic", "Basic"],
-                          ["basic+seq3", "Basic, seq 3"],
-                          ["basic+seq3plus", "Basic, seq 3+"],
+                          ["basic,seq3", "Basic, seq 3"],
+                          ["basic,seq3+", "Basic, seq 3+"],
                           ["seq3", "Seq 3"],
-                          ["seq3plus", "Seq 3+"]];
+                          ["seq3+", "Seq 3+"]];
       for (var rule_choice of rule_choices) {
          var div = create_div(this, "");
          var ele = create_checkbox(this, "");
          ele.rule_name = rule_choice[0];
          div.appendChild(ele);
          div.appendChild(create_span(rule_choice[1]));
+         ele.checked = true;
          this.rules.push(ele);
          this.host_table.cell(1, 1).appendChild(div);
       }
-      this.rules[0].checked = true;
 
       this.host_table.add_row([
          create_span("Players", "text"),
@@ -235,7 +235,11 @@ class Dirty7Lobby extends Ui {
 
       function add_params(msg, key) {
          var div = create_div(this, "");
-         div.appendChild(create_span(msg + ": " + rcvd_status[2][key]));
+         var val = rcvd_status[2][key];
+         if (key == "ruleNames") {
+            val = val.join(";");
+         }
+         div.appendChild(create_span(msg + ": " + val));
          cell.appendChild(div);
       }
       add_params("Rules", "ruleNames");
