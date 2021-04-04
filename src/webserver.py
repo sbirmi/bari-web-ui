@@ -5,20 +5,24 @@ from flask import (
         send_from_directory,
 )
 import glob
+import os
 
 app = Flask(__name__)
-server_start_time = datetime.now()
 
 # -------------------------------------
 # Don't cache elements/pages
-@app.after_request
-def after_request(response):
-    response.headers['Last-Modified'] = server_start_time
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, ' \
-                                        'post-check=0, pre-check=0, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-    return response
+if os.environ.get("NO_CACHE"):
+    print("Caching disabled")
+
+    server_start_time = datetime.now()
+    @app.after_request
+    def after_request(response):
+        response.headers['Last-Modified'] = server_start_time
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, ' \
+                                            'post-check=0, pre-check=0, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
 
 # -------------------------------------
 # static files
