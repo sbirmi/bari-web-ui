@@ -8,6 +8,18 @@ function d7_ele_count(obj) {
    return count;
 }
 
+function d7_pretty_print_state(state) {
+   var s = "";
+   for (var c of state) {
+      if (s && c >= 'A' && c <= 'Z') {
+         s += " " + c;
+      } else {
+         s += c;
+      }
+   }
+   return s;
+}
+
 /**
  * From Dirty7/Dirty7Round.py
  *
@@ -158,10 +170,8 @@ class Dirty7Lobby extends Ui {
       this.host_table.cell_class(rule_rowi, 1, "left top");
       this.host_table.cell_class(rule_rowi, 1, "left");
 
-// XXX review everything after here
-
       // Existing rooms
-      this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1);
+      this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1, "width100");
       this.existing_table.cell_content_add(0, 0, create_span("Existing rooms", "head2"));
    }
 
@@ -176,9 +186,13 @@ class Dirty7Lobby extends Ui {
       clear_contents(cell);
 
       var a = create_link("/dirty7/" + gid,
-                         create_span("Dirty7:" + gid, "text"));
-      cell.appendChild(a);
-      cell.appendChild(create_span(" " + rcvd_status[0]["gameState"], "text"));
+                         create_span("Room #" + gid, "text"));
+
+      var div = create_div(this, "", "dirty7lobby_room_row");
+      div.appendChild(a);
+      div.appendChild(create_span(" " + d7_pretty_print_state(rcvd_status[0]["gameState"]),
+                                  "text"));
+      cell.appendChild(div);
 
       // [{"gameState": "WaitingForPlayers",
       //   "clientCount": {"foo": 1},
@@ -202,23 +216,27 @@ class Dirty7Lobby extends Ui {
       //  {"ruleNames": ["basic"], "numPlayers": 2, "numDecks": 1, "numJokers": 0, "numCardsToStart": 7, "declareMaxPoints": 7, "penaltyPoints": 40, "stopPoints": 100}]
 
       if (d7_ele_count(rcvd_status[0]["clientCount"]) > 0) {
-         cell.appendChild(create_line_break());
-         cell.appendChild(create_span("Players: ", "text"));
+         var div = create_div(this, "");
+         div.appendChild(create_span("Players: ", "text"));
          var first = true;
          for (var alias in rcvd_status[0]["clientCount"]) {
-            cell.appendChild(create_span((first ? "" : ", " ) + alias, "text"));
+            div.appendChild(create_span((first ? "" : ", " ) + alias, "text"));
             first = false;
          }
+         cell.appendChild(div);
       }
 
       if (rcvd_status[0]["gameState"] != "WaitingForPlayers") {
+         var div = create_div(this, "");
          // Show round number
-         cell.appendChild(create_line_break());
-         cell.appendChild(create_span("Round #" + rcvd_status[3]));
+         div.appendChild(create_span("Round #" + rcvd_status[3]));
+         cell.appendChild(div);
       }
+
       function add_params(msg, key) {
-         cell.appendChild(create_line_break());
-         cell.appendChild(create_span(msg + ": " + rcvd_status[2][key]));
+         var div = create_div(this, "");
+         div.appendChild(create_span(msg + ": " + rcvd_status[2][key]));
+         cell.appendChild(div);
       }
       add_params("Rules", "ruleNames");
       add_params("Players", "numPlayers");
