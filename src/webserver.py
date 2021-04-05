@@ -69,3 +69,7 @@ def serveChat(gid):
 @app.route("/dirty7/<int:gid>")
 def serveDirty7(gid):
     return render_template("dirty7/index.html", gid=gid)
+
+@app.route("/dirty7/help.html")
+def serveDirty7Help():
+    return render_template("dirty7/help.html")

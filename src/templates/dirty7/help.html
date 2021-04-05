@@ -1,0 +1,161 @@
+<html>
+<head>
+   <title>Dirty7 rules</title>
+
+   <script src="/js/ui.js"></script>
+   <script src="/js/cards/cards.js"></script>
+
+   <link rel="stylesheet" href="/css/card.css"></link>
+   <link rel="stylesheet" href="/css/dirty7/help.css"></link>
+
+   <link rel="icon" type="image/png" href="/assets/dirty7_icon.png" />
+</head>
+
+<body>
+
+<h1>Dirty7</h1>
+
+<h2>Winning the Game</h2>
+
+The player with the least number of points at the end of the game wins.
+
+<h2>Basics</h2>
+
+<ol>
+   <li>Each card has points determined by the rank (suit doesn't matter)
+      <table>
+         <tr>
+            <td><b>Card</b></td>
+            <td><card suit=JOKER rank=0></td>
+            <td><card suit=H rank=1></td>
+            <td><card suit=D rank=2></td>
+            <td><card suit=C rank=3></td>
+            <td>...</td>
+            <td><card suit=D rank=10></td>
+            <td><card suit=C rank=11></td>
+            <td><card suit=H rank=12></td>
+            <td><card suit=S rank=13></td>
+         </tr>
+         <tr>
+            <td><b>Points</b></td>
+            <td align=center>0</td>
+            <td align=center>1</td>
+            <td align=center>2</td>
+            <td align=center>3</td>
+            <td align=center>...</td>
+            <td align=center>10</td>
+            <td align=center>10</td>
+            <td align=center>10</td>
+            <td align=center>10</td>
+         </tr>
+      </table>
+   </li>
+
+   <li>On your turn, you must either play (exchange) cards or declare.
+   </li>
+
+   <li><b>Playing cards</b>
+      <ol>
+         <li>Select one or more cards from your hand that you wish to discard. Selected cards appear raised.</li>
+         <li>Also select exactly one card from either the face up cards on the board or from the facedown pile.</li>
+         <li>Press "Play" to complete your turn. The selected cards from your hand are exchanged with the single card selected from the board if it is a valid exchange of cards. A valid exchange of cards is determined by the <a href="#card_exchange_rules">exchange rules</a> in effect for the round.</li>
+      </ol>
+   </li>
+
+   <li><b>Declaring</b>
+      <ol>
+         <li>You must have "Declare under points" (default is 7 points) or fewer in your hand to declare.</li>
+         <li>The round ends when a player declares.</li>
+         <li>A declare is a claim that the player <b>alone</b> has the <b>lowest number of points</b>.</li>
+      </ol>
+   </li>
+
+   <li><b>Scoring</b>
+      <ol>
+         <li>If the player who declared has the lowest number of points <b>alone</b>, the player is awarded 0 points. All other players are awarded the number of points in their hand.</li>
+         <li>If the player who declared does not have the lowest number of points <b>alone</b>, the player is awarded a penalty of "Penalty points" (default: 40). The player with the lowest number of points is awarded 0 points. Every other player is awarded the number of points in their hand.</li>
+      </ol>
+   </li>
+
+   <li>The game is played in rounds. The score is tallied at the end of each round. If a player reaches or exceeds the "Game end points" cut-off (default of 100 points), the game stops and one or more players, with the least number of points, are declared winners.
+   </li>
+</ol>
+
+<h2><a id="card_exchange_rules">Card Exchange Rules</a></h2>
+
+<h3><a id="rules_basic">Basic</a></h3>
+
+The player may drop one or more cards of the same rank. Examples
+
+<ul>
+   <li>a single queen <card suit=H rank=12></li>
+
+   <li>two sevens <card suit=D rank=7> <card suit=S rank=7></li>
+
+   <li>three aces <card suit=S rank=1> <card suit=H rank=1> <card suit=C rank=1></li>
+
+   <li>found tens <card suit=S rank=10> <card suit=H rank=10> <card suit=C rank=10> <card suit=D rank=10></li>
+</ul>
+
+
+<h3><a id="rules_seq3">Seq3</a></h3>
+
+The player may drop a <b>sequence of 3 cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
+
+<ul>
+   <li>ace, duece, trey <card suit=D rank=3> <card suit=H rank=2> <card suit=H rank=1></li>
+
+   <li>five, six, seven <card suit=H rank=7> <card suit=C rank=6> <card suit=S rank=5></li>
+
+   <li>jack, queen, king <card suit=D rank=13> <card suit=H rank=12> <card suit=H rank=11></li>
+
+   <li>single four <card suit=C rank=4></li>
+
+</ul>
+
+<b>Invalid moves</b>
+
+<ul>
+   <li><del>ace, king, queen</del> <card suit=D rank=12> <card suit=H rank=13> <card suit=H rank=1></li>
+
+   <li><del>two fives</del> <card suit=H rank=5> <card suit=C rank=5></li>
+
+</ul>
+
+
+<h3><a id="rules_basic_seq3">Basic, Seq3</a></h3>
+
+Both basic and seq3 combinations are allowed.
+
+
+<h3><a id="rules_seq3_plus">Seq3+</a></h3>
+
+The player may drop a <b>sequence of 3 or more cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
+
+<ul>
+   <li>ace, duece, trey, four <card suit=C rank=4> <card suit=D rank=3> <card suit=H rank=2> <card suit=H rank=1></li>
+
+   <li>five, six, seven <card suit=H rank=7> <card suit=C rank=6> <card suit=S rank=5></li>
+
+   <li>nine, ten, jack, queen, king <card suit=D rank=13> <card suit=C rank=12> <card suit=H rank=11> <card suit=S rank=10> <card suit=H rank=9></li>
+
+   <li>single four <card suit=C rank=4></li>
+
+</ul>
+
+
+<h3><a id="rules_basic_seq3_plus">Basic, Seq3+</a></h3>
+
+Both basic and seq3+ combinations are allowed.
+
+
+<script>
+<!--
+for (var ele of document.getElementsByTagName("card")) {
+   var attrs = ele.attributes;
+   new Card(ele, attrs["suit"].nodeValue, attrs["rank"].nodeValue, false, 1);
+}
+-->
+</script>
+</body>
+</html>
