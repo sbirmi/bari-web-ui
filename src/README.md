@@ -10,7 +10,7 @@
 
 # TODO
 
-3. cell_style --> set_cell_style()
+1. Make the game UI faster
 4. move_pane --> size & alignment
 5. placement of top-most card in the face-down pile
 7. player_info bottom align not working
