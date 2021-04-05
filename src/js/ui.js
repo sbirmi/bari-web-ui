@@ -45,10 +45,10 @@ function create_button(creator, id, value, clickcb="", cls="") {
    return ele;
 }
 
-function create_div(creator, id, cls="") {
+function create_div(creator, id, cls=null) {
    var ele = document.createElement("div");
    ele.creator = creator;
-   ele.className = cls;
+   if (cls) { ele.className = cls; }
    return ele;
 }
 

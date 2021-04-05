@@ -118,8 +118,22 @@ class Dirty7RoundParameters extends Dirty7UiBase {
 class Dirty7GameOver extends Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui);
-      this.ui = create_span("Game over", "width100 head1 d7_game_over");
+      this.ui = create_div(this, "width100");
+      this.table = new Table(this.ui, 0, 1, "width100 d7_game_over");
+      this.table.add_row([create_span("Game over", "head1")]);
+      this.table.cell_class(0, 0, "center");
+
       this.parent_ui.appendChild(this.ui);
+   }
+   set_winners(winners) {
+      var msg;
+      if (winners.length == 1) {
+         msg = "Winner: " + winners[0];
+      } else {
+         msg = "Winners: " + winners.join(", ");
+      }
+      this.table.add_row([create_span(msg, "head2")]);
+      this.table.cell_class(1, 0, "center");
    }
 }
 
@@ -602,12 +616,12 @@ class Dirty7Room extends Ui {
       // ["GAME-OVER", ["cat"]]
       this.game_over = true;
 
-      // TODO
       for (var alias in this.player_boards) {
          this.player_boards[alias].hide();
       }
       this.login_bar.hide();
       this.board.hide();
+      this.game_over_bar.set_winners(jmsg[1]);
       this.game_over_bar.show();
       this.round_params.hide();
    }
