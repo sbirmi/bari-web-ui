@@ -309,17 +309,18 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       this.alias_to_idx = {};
 
       this.title_table = new Table(this.parent_ui, 2, 1, "d7_score_board floatleft");
-      this.title_table.cell_content_add(0, 0, create_span("Scoreboard", "head2"));
 
       this.container_table = null;
    }
    init_container_table(data) {
+      this.title_table.cell_content_add(0, 0, create_span("Scoreboard", "head2"));
+
       var count = 0;
       for (var alias in data) {
          this.alias_to_idx[alias] = count++;
       }
       this.container_table = new Table(this.title_table.cell(1, 0), 2, count + 1, "d7_score_board");
-      this.ui = this.container_table.ui;
+      this.ui = this.title_table.ui;
 
       this.cell_inner_table = [];
 
