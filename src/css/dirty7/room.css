@@ -131,6 +131,11 @@
    width: 950px;
 }
 
+.d7_score_board_round {
+   width: 30px;
+   border-right: solid 1px;
+}
+
 .d7_score_board_header {
    background-color: lightblue;
 }

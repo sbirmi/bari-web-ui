@@ -308,6 +308,9 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       this.player_cards_data = []; // [rno, alias, card_descs]
       this.alias_to_idx = {};
 
+      this.title_table = new Table(this.parent_ui, 2, 1, "d7_score_board floatleft");
+      this.title_table.cell_content_add(0, 0, create_span("Scoreboard", "head2"));
+
       this.container_table = null;
    }
    init_container_table(data) {
@@ -315,11 +318,10 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       for (var alias in data) {
          this.alias_to_idx[alias] = count++;
       }
-      this.container_table = new Table(this.parent_ui, 2, count + 1, "d7_score_board floatleft");
+      this.container_table = new Table(this.title_table.cell(1, 0), 2, count + 1, "d7_score_board");
+      this.ui = this.container_table.ui;
 
       this.cell_inner_table = [];
-
-      this.ui = this.parent_ui.appendChild(this.container_table.ui);
 
       // Populate first row
       for (var alias in this.alias_to_idx) {
@@ -359,6 +361,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
    add_row(round_num) {
       this.container_table.add_row(null, round_num);
 
+      this.container_table.cell_class(round_num, 0, "d7_score_board_round right");
       this.container_table.cell_content_add(round_num, 0,
                                             create_span("" + round_num, "text"));
 
