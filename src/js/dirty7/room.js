@@ -11,6 +11,16 @@ function dirty7_cards_from_card_descs(card_rack, card_descs, c_theme=0,
    return cards;
 }
 
+function dirty7_rule_anchor(name) {
+   if (name == "basic") { return "rules_basic"; }
+   if (name == "basic,seq3") { return "rules_basic_seq3"; }
+   if (name == "basic,seq3+") { return "rules_basic_seq3_plus"; }
+   if (name == "seq3") { return "rules_seq3"; }
+   if (name == "seq3+") { return "rules_seq3_plus"; }
+   console.log("dirty7_rule_anchor: unrecognized rule " + name);
+   return "";
+}
+
 class Dirty7UiBase {
    constructor(room, nw, parent_ui) {
       this.room = room;
@@ -110,8 +120,12 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_num = round_num;
       this.round_params = round_params;
       clear_contents(this.ui);
-      this.ui.appendChild(create_span(
-         "[" + this.round_num + "] " + this.round_params["ruleNames"][0]));
+      this.ui.appendChild(create_span("Round " + this.round_num));
+      this.ui.appendChild(create_line_break());
+      console.log(this.round_params["ruleNames"]);
+      this.ui.appendChild(create_span(this.round_params["ruleNames"][0] + " ", "text"));
+      this.ui.appendChild(create_link("/dirty7/help.html#" + dirty7_rule_anchor(this.round_params["ruleNames"][0]),
+                                      create_span("[?]", "text"), true));
    }
 }
 
