@@ -1,12 +1,13 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
    <title>Dirty7 rules</title>
 
    <script src="/js/ui.js"></script>
    <script src="/js/cards/cards.js"></script>
 
-   <link rel="stylesheet" href="/css/card.css"></link>
-   <link rel="stylesheet" href="/css/dirty7/help.css"></link>
+   <link rel="stylesheet" href="/css/card.css">
+   <link rel="stylesheet" href="/css/dirty7/help.css">
 
    <link rel="icon" type="image/png" href="/assets/dirty7_icon.png" />
 </head>
@@ -26,27 +27,27 @@ The player with the least number of points at the end of the game wins.
       <table>
          <tr>
             <td><b>Card</b></td>
-            <td><card suit=JOKER rank=0></td>
-            <td><card suit=H rank=1></td>
-            <td><card suit=D rank=2></td>
-            <td><card suit=C rank=3></td>
+	    <td><card suit=JOKER rank=0></card></td>
+	    <td><card suit=H rank=1></card></td>
+	    <td><card suit=D rank=2></card></td>
+	    <td><card suit=C rank=3></card></td>
             <td>...</td>
-            <td><card suit=D rank=10></td>
-            <td><card suit=C rank=11></td>
-            <td><card suit=H rank=12></td>
-            <td><card suit=S rank=13></td>
+	    <td><card suit=D rank=10></card></td>
+	    <td><card suit=C rank=11></card></td>
+	    <td><card suit=H rank=12></card></td>
+	    <td><card suit=S rank=13></card></td>
          </tr>
          <tr>
             <td><b>Points</b></td>
-            <td align=center>0</td>
-            <td align=center>1</td>
-            <td align=center>2</td>
-            <td align=center>3</td>
-            <td align=center>...</td>
-            <td align=center>10</td>
-            <td align=center>10</td>
-            <td align=center>10</td>
-            <td align=center>10</td>
+            <td style="text-align: center;">0</td>
+            <td style="text-align: center;">1</td>
+            <td style="text-align: center;">2</td>
+            <td style="text-align: center;">3</td>
+            <td style="text-align: center;">...</td>
+            <td style="text-align: center;">10</td>
+            <td style="text-align: center;">10</td>
+            <td style="text-align: center;">10</td>
+            <td style="text-align: center;">10</td>
          </tr>
       </table>
    </li>
@@ -88,13 +89,13 @@ The player with the least number of points at the end of the game wins.
 The player may drop one or more cards of the same rank. Examples
 
 <ul>
-   <li>a single queen <card suit=H rank=12></li>
+   <li>a single queen <card suit=H rank=12></card></li>
 
-   <li>two sevens <card suit=D rank=7> <card suit=S rank=7></li>
+   <li>two sevens <card suit=D rank=7></card> <card suit=S rank=7></card></li>
 
-   <li>three aces <card suit=S rank=1> <card suit=H rank=1> <card suit=C rank=1></li>
+   <li>three aces <card suit=S rank=1></card> <card suit=H rank=1></card> <card suit=C rank=1></card></li>
 
-   <li>found tens <card suit=S rank=10> <card suit=H rank=10> <card suit=C rank=10> <card suit=D rank=10></li>
+   <li>found tens <card suit=S rank=10></card> <card suit=H rank=10></card> <card suit=C rank=10></card> <card suit=D rank=10></card></li>
 </ul>
 
 
@@ -103,22 +104,22 @@ The player may drop one or more cards of the same rank. Examples
 The player may drop a <b>sequence of 3 cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
 
 <ul>
-   <li>ace, duece, trey <card suit=D rank=3> <card suit=H rank=2> <card suit=H rank=1></li>
+	<li>ace, duece, trey <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
 
-   <li>five, six, seven <card suit=H rank=7> <card suit=C rank=6> <card suit=S rank=5></li>
+	<li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
 
-   <li>jack, queen, king <card suit=D rank=13> <card suit=H rank=12> <card suit=H rank=11></li>
+	<li>jack, queen, king <card suit=D rank=13></card> <card suit=H rank=12></card> <card suit=H rank=11></card></li>
 
-   <li>single four <card suit=C rank=4></li>
+	<li>single four <card suit=C rank=4></card></li>
 
 </ul>
 
 <b>Invalid moves</b>
 
 <ul>
-   <li><del>ace, king, queen</del> <card suit=D rank=12> <card suit=H rank=13> <card suit=H rank=1></li>
+	<li><del>ace, king, queen</del> <card suit=D rank=12></card> <card suit=H rank=13></card> <card suit=H rank=1></card></li>
 
-   <li><del>two fives</del> <card suit=H rank=5> <card suit=C rank=5></li>
+	<li><del>two fives</del> <card suit=H rank=5></card> <card suit=C rank=5></card></li>
 
 </ul>
 
@@ -133,13 +134,13 @@ Both basic and seq3 combinations are allowed.
 The player may drop a <b>sequence of 3 or more cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
 
 <ul>
-   <li>ace, duece, trey, four <card suit=C rank=4> <card suit=D rank=3> <card suit=H rank=2> <card suit=H rank=1></li>
+	<li>ace, duece, trey, four <card suit=C rank=4></card> <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
 
-   <li>five, six, seven <card suit=H rank=7> <card suit=C rank=6> <card suit=S rank=5></li>
+	<li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
 
-   <li>nine, ten, jack, queen, king <card suit=D rank=13> <card suit=C rank=12> <card suit=H rank=11> <card suit=S rank=10> <card suit=H rank=9></li>
+	<li>nine, ten, jack, queen, king <card suit=D rank=13></card> <card suit=C rank=12></card> <card suit=H rank=11></card> <card suit=S rank=10></card> <card suit=H rank=9></card></li>
 
-   <li>single four <card suit=C rank=4></li>
+	<li>single four <card suit=C rank=4></card></li>
 
 </ul>
 
