@@ -583,7 +583,7 @@ class Dirty7Room extends Ui {
       //   ["TABLE-CARDS", 1, 37, 0, [["H", 5]]]
       if (this.is_old_round(jmsg[1])) { return; }
 
-      this.board.deck.set_card_count(jmsg[2]);
+      this.board.deck.set_card_count(Math.min(jmsg[2], 8));
 
       var cards = dirty7_cards_from_card_descs(this.board.card_rack, jmsg[4]);
       this.board.card_rack.clear();
