@@ -43,12 +43,12 @@ class Dirty7LoginBar extends Dirty7UiBase {
 
       this.alias_internal = "";
 
-      this.ui = create_div(this, "", "d7_login_bar text");
+      this.ui = create_div(this, "", "d7_login_bar text right");
       this.alias = create_input_text(this, "", "d7_login_bar_input text");
       this.passwd = create_input_password(this, "", "d7_login_bar_input text");
       this.connect_btn = create_button(this, "", "Connect",
                                       this.connect_click,
-                                      "text");
+                                      "d7_login_bar_input text");
 
       this.alias.addEventListener("keyup", this.alias_keyup);
       this.passwd.addEventListener("keyup", this.passwd_keyup);
@@ -120,9 +120,7 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_num = round_num;
       this.round_params = round_params;
       clear_contents(this.ui);
-      this.ui.appendChild(create_span("Round " + this.round_num));
-      this.ui.appendChild(create_line_break());
-      console.log(this.round_params["ruleNames"]);
+      this.ui.appendChild(create_span("Round " + this.round_num + ", "));
       this.ui.appendChild(create_span(this.round_params["ruleNames"][0] + " ", "text"));
       this.ui.appendChild(create_link("/dirty7/help.html#" + dirty7_rule_anchor(this.round_params["ruleNames"][0]),
                                       create_span("[?]", "text"), true));
