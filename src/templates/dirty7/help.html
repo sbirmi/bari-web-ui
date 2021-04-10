@@ -84,109 +84,166 @@ The player with the least number of points at the end of the game wins.
 
 <h2><a id="card_exchange_rules">Card Exchange Rules</a></h2>
 
-<h3><a id="rules_basic">Basic</a></h3>
+<table>
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_basic">Basic</a></h3>
+      </td>
 
-The player may drop one or more cards of the same rank. Examples
+      <td>
+         The player may drop one or more cards of the same rank. Examples
 
-<ul>
-   <li>a single queen <card suit=H rank=12></card></li>
+         <ul>
+            <li>a single queen <card suit=H rank=12></card></li>
 
-   <li>two sevens <card suit=D rank=7></card> <card suit=S rank=7></card></li>
+            <li>two sevens <card suit=D rank=7></card> <card suit=S rank=7></card></li>
 
-   <li>three aces <card suit=S rank=1></card> <card suit=H rank=1></card> <card suit=C rank=1></card></li>
+            <li>three aces <card suit=S rank=1></card> <card suit=H rank=1></card> <card suit=C rank=1></card></li>
 
-   <li>four tens <card suit=S rank=10></card> <card suit=H rank=10></card> <card suit=C rank=10></card> <card suit=D rank=10></card></li>
-</ul>
-
-
-<h3><a id="rules_seq3">Seq3</a></h3>
-
-The player may drop a <b>sequence of 3 cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
-
-<ul>
-	<li>ace, duece, trey <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
-
-	<li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
-
-	<li>jack, queen, king <card suit=D rank=13></card> <card suit=H rank=12></card> <card suit=H rank=11></card></li>
-
-	<li>single four <card suit=C rank=4></card></li>
-
-</ul>
-
-<b>Invalid moves</b>
-
-<ul>
-	<li><del>ace, king, queen</del> <card suit=D rank=12></card> <card suit=H rank=13></card> <card suit=H rank=1></card></li>
-
-	<li><del>two fives</del> <card suit=H rank=5></card> <card suit=C rank=5></card></li>
-
-</ul>
+            <li>four tens <card suit=S rank=10></card> <card suit=H rank=10></card> <card suit=C rank=10></card> <card suit=D rank=10></card></li>
+         </ul>
+      </td>
+   </tr>
 
 
-<h3><a id="rules_basic_seq3">Basic, Seq3</a></h3>
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_seq3">Seq3</a></h3>
+      </td>
 
-Both <a href="#rules_basic">basic</a> and <a href="#rules_seq3">seq3</a> combinations are allowed.
+      <td>
+         The player may drop a <b>sequence of 3 cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
 
+         <ul>
+            <li>ace, duece, trey <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
 
-<h3><a id="rules_suit3">Suit3</a></h3>
+            <li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
 
-The player may drop a <b>3 cards of the same suit</b> (jokers can be used as any suit) or a <b>single card</b>. Examples
+            <li>jack, queen, king <card suit=D rank=13></card> <card suit=H rank=12></card> <card suit=H rank=11></card></li>
 
-<ul>
-	<li>hearts <card suit=H rank=4></card> <card suit=H rank=8></card> <card suit=H rank=12></card></li>
+            <li>single four <card suit=C rank=4></card></li>
 
-	<li>spades with a joker <card suit=S rank=4></card> <card suit=S rank=8></card> <card suit=JOKER rank=0></card></li>
+         </ul>
 
-	<li>single four <card suit=C rank=4></card></li>
+         <b>Invalid moves</b>
 
-</ul>
+         <ul>
+            <li><del>ace, king, queen</del> <card suit=D rank=12></card> <card suit=H rank=13></card> <card suit=H rank=1></card></li>
 
+            <li><del>two fives</del> <card suit=H rank=5></card> <card suit=C rank=5></card></li>
 
-<h3><a id="rules_basic_suit3">Basic, Suit3</a></h3>
-
-Both <a href="#rules_basic">basic</a> and <a href="#rules_suit3">suit3</a> combinations are allowed.
-
-
-<h3><a id="rules_seq3_plus">Seq3+</a></h3>
-
-The player may drop a <b>sequence of 3 or more cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
-
-<ul>
-	<li>ace, duece, trey, four <card suit=C rank=4></card> <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
-
-	<li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
-
-	<li>nine, ten, jack, queen, king <card suit=D rank=13></card> <card suit=C rank=12></card> <card suit=H rank=11></card> <card suit=S rank=10></card> <card suit=H rank=9></card></li>
-
-	<li>single four <card suit=C rank=4></card></li>
-
-</ul>
+         </ul>
+      </td>
+   </tr>
 
 
-<h3><a id="rules_basic_seq3_plus">Basic, Seq3+</a></h3>
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_basic_seq3">Basic, Seq3</a></h3>
+      </td>
 
-Both <a href="#rules_basic">basic</a> and <a href="#rules_seq3_plus">seq3+</a> combinations are allowed.
-
-
-<h3><a id="rules_suit3_plus">Suit3+</a></h3>
-
-The player may drop a <b>3 or more cards of the same suit</b> (jokers can be used as any suit) or a <b>single card</b>. Examples
-
-<ul>
-	<li>clubs <card suit=C rank=4></card> <card suit=C rank=8></card> <card suit=C rank=12></card></li>
-
-   <li>diamonds with a joker <card suit=D rank=2></card> <card suit=D rank=3></card> <card suit=D rank=7></card> <card suit=D rank=8></card> <card suit=D rank=13></card> <card suit=JOKER rank=0></card></li>
-
-	<li>single four <card suit=C rank=4></card></li>
-
-</ul>
+      <td>
+         Both <a href="#rules_basic">basic</a> and <a href="#rules_seq3">seq3</a> combinations are allowed.
+      </td>
+   </tr>
 
 
-<h3><a id="rules_basic_suit3_plus">Basic, Suit3+</a></h3>
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_suit3">Suit3</a></h3>
+      </td>
 
-Both <a href="#rules_basic">basic</a> and <a href="#rules_suit3_plus">suit3+</a> combinations are allowed.
+      <td>
+         The player may drop a <b>3 cards of the same suit</b> (jokers can be used as any suit) or a <b>single card</b>. Examples
 
+         <ul>
+            <li>hearts <card suit=H rank=4></card> <card suit=H rank=8></card> <card suit=H rank=12></card></li>
+
+            <li>spades with a joker <card suit=S rank=4></card> <card suit=S rank=8></card> <card suit=JOKER rank=0></card></li>
+
+            <li>single four <card suit=C rank=4></card></li>
+
+         </ul>
+      </td>
+   </tr>
+
+
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_basic_suit3">Basic, Suit3</a></h3>
+      </td>
+
+      <td>
+         Both <a href="#rules_basic">basic</a> and <a href="#rules_suit3">suit3</a> combinations are allowed.
+
+      </td>
+   </tr>
+
+
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_seq3_plus">Seq3+</a></h3>
+      </td>
+
+      <td>
+         The player may drop a <b>sequence of 3 or more cards</b> or a <b>single card</b>. The suit need not match. Ace has the rank of 1. Examples
+
+         <ul>
+            <li>ace, duece, trey, four <card suit=C rank=4></card> <card suit=D rank=3></card> <card suit=H rank=2></card> <card suit=H rank=1></card></li>
+
+            <li>five, six, seven <card suit=H rank=7></card> <card suit=C rank=6></card> <card suit=S rank=5></card></li>
+
+            <li>nine, ten, jack, queen, king <card suit=D rank=13></card> <card suit=C rank=12></card> <card suit=H rank=11></card> <card suit=S rank=10></card> <card suit=H rank=9></card></li>
+
+            <li>single four <card suit=C rank=4></card></li>
+
+         </ul>
+      </td>
+   </tr>
+
+
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_basic_seq3_plus">Basic, Seq3+</a></h3>
+      </td>
+
+      <td>
+         Both <a href="#rules_basic">basic</a> and <a href="#rules_seq3_plus">seq3+</a> combinations are allowed.
+      </td>
+   </tr>
+
+
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_suit3_plus">Suit3+</a></h3>
+      </td>
+
+      <td>
+         The player may drop a <b>3 or more cards of the same suit</b> (jokers can be used as any suit) or a <b>single card</b>. Examples
+
+         <ul>
+            <li>clubs <card suit=C rank=4></card> <card suit=C rank=8></card> <card suit=C rank=12></card></li>
+
+            <li>diamonds with a joker <card suit=D rank=2></card> <card suit=D rank=3></card> <card suit=D rank=7></card> <card suit=D rank=8></card> <card suit=D rank=13></card> <card suit=JOKER rank=0></card></li>
+
+            <li>single four <card suit=C rank=4></card></li>
+
+         </ul>
+      </td>
+   </tr>
+
+
+   <tr>
+      <td class=rule_name>
+         <h3><a id="rules_basic_suit3_plus">Basic, Suit3+</a></h3>
+      </td>
+
+      <td>
+         Both <a href="#rules_basic">basic</a> and <a href="#rules_suit3_plus">suit3+</a> combinations are allowed.
+      </td>
+   </tr>
+
+</table>
 
 <script>
 <!--
