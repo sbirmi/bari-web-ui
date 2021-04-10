@@ -15,8 +15,12 @@ function dirty7_rule_anchor(name) {
    if (name == "basic") { return "rules_basic"; }
    if (name == "basic,seq3") { return "rules_basic_seq3"; }
    if (name == "basic,seq3+") { return "rules_basic_seq3_plus"; }
+   if (name == "basic,suit3") { return "rules_basic_suit3"; }
+   if (name == "basic,suit3+") { return "rules_basic_suit3_plus"; }
    if (name == "seq3") { return "rules_seq3"; }
    if (name == "seq3+") { return "rules_seq3_plus"; }
+   if (name == "suit3") { return "rules_suit3"; }
+   if (name == "suit3+") { return "rules_suit3_plus"; }
    console.log("dirty7_rule_anchor: unrecognized rule " + name);
    return "";
 }
@@ -663,6 +667,7 @@ class Dirty7Room extends Ui {
          }
          room.login_bar.hide();
          room.show_info_msg("Player accepted");
+         room.show_info_msg("Waiting for game to start");
 
       } else if (jmsg[0] == "TURN-ORDER") {
          room.maybe_update_round_num(jmsg[1]);

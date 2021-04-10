@@ -130,8 +130,13 @@ class Dirty7Lobby extends Ui {
       var rule_choices = [["basic", "Basic"],
                           ["basic,seq3", "Basic, seq 3"],
                           ["basic,seq3+", "Basic, seq 3+"],
+                          ["basic,suit3", "Basic, suit 3"],
+                          ["basic,suit3+", "Basic, suit 3+"],
                           ["seq3", "Seq 3"],
-                          ["seq3+", "Seq 3+"]];
+                          ["seq3+", "Seq 3+"],
+                          ["suit3", "Suit 3"],
+                          ["suit3+", "Suit 3+"],
+                         ];
       for (var rule_choice of rule_choices) {
          var div = create_div(this, "");
          var ele = create_checkbox(this, "");
