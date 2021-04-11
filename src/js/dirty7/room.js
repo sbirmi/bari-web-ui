@@ -111,7 +111,7 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_num = null;
       this.round_params = null;
 
-      this.ui = create_span("", "head2 d7_round_params");
+      this.ui = create_span("", "d7_round_params text bold");
       parent_ui.appendChild(this.ui);
 
       this.hide();
@@ -126,15 +126,18 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_num = round_num;
       this.round_params = round_params;
       clear_contents(this.ui);
+
       this.ui.appendChild(create_span("Round " + this.round_num + ", "));
-      this.ui.appendChild(create_span(this.round_params["ruleNames"][0] + ", ", "text"));
+      this.ui.appendChild(create_span("Rules " + this.round_params["ruleNames"][0] + ", "));
+
       var declare_cut_off = this.round_params["declareMaxPoints"][0];
       if (declare_cut_off == null) {
          declare_cut_off = "any";
       }
-      this.ui.appendChild(create_span("declare upto " + declare_cut_off + " ", "text"));
+      this.ui.appendChild(create_span("Declare upto " + declare_cut_off + ", "));
+      this.ui.appendChild(create_span("Scoring system " + round_params["scoringSystems"][0] + " "));
       this.ui.appendChild(create_link("/dirty7/help.html#" + dirty7_rule_anchor(this.round_params["ruleNames"][0]),
-                                      create_span("[?]", "text"), true));
+                                      create_span("[?]"), true));
    }
 }
 

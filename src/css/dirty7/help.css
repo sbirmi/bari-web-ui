@@ -14,3 +14,9 @@ h2 {
    width: 200px;
    vertical-align: top;
 }
+
+.card_point {
+   background-color: #f0f0f0;
+   border-radius: 5px;
+   padding: 2px;
+}
