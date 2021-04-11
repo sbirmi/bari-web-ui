@@ -60,9 +60,11 @@ class Dirty7LoginBar extends Dirty7UiBase {
 
       this.ui.appendChild(create_span("Name", "d7_login_bar_text"));
       this.ui.appendChild(this.alias);
+      this.ui.appendChild(create_line_break());
 
       this.ui.appendChild(create_span("Password", "d7_login_bar_text"));
       this.ui.appendChild(this.passwd);
+      this.ui.appendChild(create_line_break());
 
       this.ui.appendChild(this.connect_btn);
 
@@ -125,7 +127,12 @@ class Dirty7RoundParameters extends Dirty7UiBase {
       this.round_params = round_params;
       clear_contents(this.ui);
       this.ui.appendChild(create_span("Round " + this.round_num + ", "));
-      this.ui.appendChild(create_span(this.round_params["ruleNames"][0] + " ", "text"));
+      this.ui.appendChild(create_span(this.round_params["ruleNames"][0] + ", ", "text"));
+      var declare_cut_off = this.round_params["declareMaxPoints"][0];
+      if (declare_cut_off == null) {
+         declare_cut_off = "any";
+      }
+      this.ui.appendChild(create_span("declare upto " + declare_cut_off + " ", "text"));
       this.ui.appendChild(create_link("/dirty7/help.html#" + dirty7_rule_anchor(this.round_params["ruleNames"][0]),
                                       create_span("[?]", "text"), true));
    }

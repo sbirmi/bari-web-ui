@@ -145,7 +145,7 @@ class Dirty7Lobby extends Ui {
          div.appendChild(create_span(rule_choice[1]));
          ele.checked = true;
          this.rules.push(ele);
-         this.host_table.cell(1, 1).appendChild(div);
+         this.host_table.cell(rule_rowi, 1).appendChild(div);
       }
 
       this.host_table.add_row([
@@ -154,9 +154,27 @@ class Dirty7Lobby extends Ui {
       this.host_table.add_row([
          create_span("Start card count", "text"),
          this.start_card_count]);
-      this.host_table.add_row([
-         create_span("Declare under points", "text"),
-         this.decl_point_limit]);
+
+      // Declare under points row
+      var declare_rowi = 4;
+      this.host_table.add_row();
+      this.host_table.cell(declare_rowi, 0).appendChild(create_span("Declare under points", "text"));
+
+      this.declares = [];
+      var declare_choices = [[7, "7"],
+                             [null, "Any"],
+                            ];
+      for (var declare_choice of declare_choices) {
+         var div = create_div(this, "");
+         var ele = create_checkbox(this, "");
+         ele.declare_cut_off = declare_choice[0];
+         div.appendChild(ele);
+         div.appendChild(create_span(declare_choice[1]));
+         ele.checked = true;
+         this.declares.push(ele);
+         this.host_table.cell(declare_rowi, 1).appendChild(div);
+      }
+
       this.host_table.add_row([
          create_span("Penalty points", "text"),
          this.penalty_points]);
@@ -176,6 +194,8 @@ class Dirty7Lobby extends Ui {
       }
       this.host_table.cell_class(rule_rowi, 1, "left top");
       this.host_table.cell_class(rule_rowi, 1, "left");
+      this.host_table.cell_class(declare_rowi, 1, "left top");
+      this.host_table.cell_class(declare_rowi, 1, "left");
 
       // Existing rooms
       this.existing_table = new Table(this.outer_table.cell(1, 0), 1, 1, "width100");
@@ -246,6 +266,13 @@ class Dirty7Lobby extends Ui {
          if (key == "ruleNames") {
             val = val.join(";");
          }
+         if (key == "declareMaxPoints") {
+            for (var i in val) {
+               if (val[i] == null) {
+                  val[i] = "Any";
+               }
+            }
+         }
          div.appendChild(create_span(msg + ": " + val));
          cell.appendChild(div);
       }
@@ -291,13 +318,19 @@ class Dirty7Lobby extends Ui {
             rule_names.push(rule.rule_name);
          }
       }
+      var declares = [];
+      for (var declare of lobby.declares) {
+         if (declare.checked) {
+            declares.push(declare.declare_cut_off);
+         }
+      }
       var msg = ["HOST", "dirty7",
          rule_names,
          Number(lobby.player_count.value),
          Number(lobby.deck_count.value),
          Number(lobby.joker_count.value),
          Number(lobby.start_card_count.value),
-         Number(lobby.decl_point_limit.value),
+         declares,
          Number(lobby.penalty_points.value),
          Number(lobby.game_end_points.value)];
       lobby.nw.send(msg);
