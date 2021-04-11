@@ -20,6 +20,16 @@ function d7_pretty_print_state(state) {
    return s;
 }
 
+function d7_lobby_checkbox(creator, label_txt, value, checked=true) {
+   var div = create_div(creator, "");
+   var ele = create_checkbox(creator, "");
+   ele.d7_value = value;
+   div.appendChild(ele);
+   div.appendChild(create_span(label_txt));
+   ele.checked = checked;
+   return [ele, div];
+}
+
 /**
  * From Dirty7/Dirty7Round.py
  *
@@ -138,14 +148,9 @@ class Dirty7Lobby extends Ui {
                           ["suit3+", "Suit 3+"],
                          ];
       for (var rule_choice of rule_choices) {
-         var div = create_div(this, "");
-         var ele = create_checkbox(this, "");
-         ele.rule_name = rule_choice[0];
-         div.appendChild(ele);
-         div.appendChild(create_span(rule_choice[1]));
-         ele.checked = true;
-         this.rules.push(ele);
-         this.host_table.cell(rule_rowi, 1).appendChild(div);
+         var ele_div = d7_lobby_checkbox(this, rule_choice[1], rule_choice[0]);
+         this.rules.push(ele_div[0]);
+         this.host_table.cell(rule_rowi, 1).appendChild(ele_div[1]);
       }
 
       this.host_table.add_row([
@@ -161,18 +166,13 @@ class Dirty7Lobby extends Ui {
       this.host_table.cell(declare_rowi, 0).appendChild(create_span("Declare under points", "text"));
 
       this.declares = [];
-      var declare_choices = [[7, "7"],
-                             [null, "Any"],
+      var declare_choices = [["7", 7, true],
+                             ["Any", null, false],
                             ];
       for (var declare_choice of declare_choices) {
-         var div = create_div(this, "");
-         var ele = create_checkbox(this, "");
-         ele.declare_cut_off = declare_choice[0];
-         div.appendChild(ele);
-         div.appendChild(create_span(declare_choice[1]));
-         ele.checked = true;
-         this.declares.push(ele);
-         this.host_table.cell(declare_rowi, 1).appendChild(div);
+         var ele_div = d7_lobby_checkbox(this, declare_choice[0], declare_choice[1], declare_choice[2]);
+         this.declares.push(ele_div[0]);
+         this.host_table.cell(declare_rowi, 1).appendChild(ele_div[1]);
       }
 
       this.host_table.add_row([
@@ -315,13 +315,13 @@ class Dirty7Lobby extends Ui {
       var rule_names = [];
       for (var rule of lobby.rules) {
          if (rule.checked) {
-            rule_names.push(rule.rule_name);
+            rule_names.push(rule.d7_value);
          }
       }
       var declares = [];
       for (var declare of lobby.declares) {
          if (declare.checked) {
-            declares.push(declare.declare_cut_off);
+            declares.push(declare.d7_value);
          }
       }
       var msg = ["HOST", "dirty7",
