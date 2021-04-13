@@ -104,7 +104,7 @@ class Dirty7Lobby extends Ui {
 
       // Outer table
       this.outer_table = new Table(this.div, 2, 1);
-      this.outer_table.cell_class(0, 0, "dirty7lobby_title head1");
+      this.outer_table.cell_class(0, 0, "lobby_title head1");
       this.outer_table.cell_content_add(0, 0, create_span("Dirty7 Lobby &nbsp; "));
       this.outer_table.cell_content_add(0, 0,
          create_link("/dirty7/help.html", create_span("[help]", "text"), true));
