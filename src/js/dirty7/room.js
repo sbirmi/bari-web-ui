@@ -340,12 +340,12 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       for (var alias in this.alias_to_idx) {
          var idx = this.alias_to_idx[alias];
 
-         this.container_table.cell_class(0, idx + 1, "d7_score_board_header");
+         this.container_table.cell_class(0, idx + 1, "d7_score_board_header center");
          this.container_table.cell_content_add(0, idx + 1,
                                                create_span(alias, "head2"));
 
-         this.container_table.cell_class(1, idx + 1, "right d7_score_board_total");
-         this.container_table.cell_content_add(1, idx + 1, create_span("0", "text"));
+         this.container_table.cell_class(1, idx + 1, "d7_score_board_total center");
+         this.container_table.cell_content_add(1, idx + 1, create_span("0", "head2"));
       }
    }
 
@@ -382,7 +382,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       for (var i=1; i < this.container_table.num_cols; ++i) {
          this.cell_inner_table[round_num][i] = new Table(this.container_table.cell(round_num, i),
                                      1, 2, "d7_score_board_inner_table width100");
-         this.cell_inner_table[round_num][i].cell_class(0, 1, "right");
+         this.cell_inner_table[round_num][i].cell_class(0, 1, "d7_score_board_inner_table_score");
          this.cell_inner_table[round_num][i].cell_content_set(0, 1, create_span("", "text"));
       }
 
@@ -443,7 +443,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
          this.container_table.cell_content_set(this.highest_round_num_seen + 1,
                                                idx + 1,
-                                               create_span("" + total, "text"));
+                                               create_span("" + total, "head2"));
       }
    }
 }

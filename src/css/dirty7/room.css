@@ -144,4 +144,9 @@
 }
 
 .d7_score_board_inner_table {
+   background-image: linear-gradient(to right, white, lightgrey);
+}
+
+.d7_score_board_inner_table_score {
+   width: 50px;
 }
