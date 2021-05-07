@@ -1,0 +1,9 @@
+/* page level */
+
+.taboo_page {
+   border-collapse: collapse;
+   padding: 0px;
+   margin: 0px;
+   overflow-x: hidden;
+}
+
