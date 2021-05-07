@@ -73,3 +73,9 @@ def serveDirty7(gid):
 @app.route("/dirty7/help.html")
 def serveDirty7Help():
     return render_template("dirty7/help.html")
+
+# -------------------------------------
+# Taboo room
+@app.route("/taboo/<int:gid>")
+def serveTaboo(gid):
+    return render_template("taboo/index.html", gid=gid)
