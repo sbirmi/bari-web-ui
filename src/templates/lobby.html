@@ -6,6 +6,7 @@
    <script src="/js/network.js"></script>
    <script src="/js/chat/lobby.js"></script>
    <script src="/js/dirty7/lobby.js"></script>
+   <script src="/js/taboo/lobby.js"></script>
 
    <link rel="stylesheet" href="/css/common.css"></link>
    <link rel="stylesheet" href="/css/lobby.css"></link>
@@ -24,6 +25,7 @@
    <table>
       <tr>
          <td class="top"><div id="divdirty7lobby"></div></td>
+         <td class="top"><div id="divTaboolobby"></div></td>
          <td class="top"><div id="divchatlobby"></div></td>
       </tr>
    </table>
@@ -34,6 +36,8 @@ var notifications = new UiNotifications(document.getElementById("divnotification
 var chatlobby = new ChatLobby(document.getElementById("divchatlobby"));
 var d7lobby = new Dirty7Lobby(document.getElementById("divdirty7lobby"),
                               notifications);
+var tabooLobby = new TabooLobby(document.getElementById("divTaboolobby"),
+                              notifications)
 -->
 </script>
 </body>
