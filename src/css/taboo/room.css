@@ -65,3 +65,34 @@
    padding: 10px;
    filter: drop-shadow(2px 2px 2px #a0a0a0);
 }
+
+/* taboo wait for kickoff widget */
+
+.taboo_wfk {
+   height: 300px;
+}
+
+/* taboo turn word widget */
+
+.taboo_turn_word {
+   height: 300px;
+}
+
+.taboo_turn_word_secret_cell {
+   height: 60px;
+   padding: 15px;
+}
+
+.taboo_turn_word_disallowed_cell {
+   padding: 15px;
+}
+
+.taboo_turn_word_secret {
+   background-color: blue;
+   color: white;
+   padding: 15px;
+   border-radius: 10px;
+}
+
+.taboo_turn_word_disallowed {
+}
