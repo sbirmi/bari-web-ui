@@ -8,8 +8,13 @@
 }
 
 /* login bar related */
+
 .taboo_login_bar {
    background: orange;
+}
+
+.taboo_login_bar_alias_cell {
+   width: 300px;
 }
 
 .taboo_login_bar_team_cell {
@@ -17,7 +22,6 @@
 }
 
 .taboo_login_bar_btn_cell {
-   width: 150px;
 }
 
 .taboo_login_bar_alias {
@@ -26,4 +30,38 @@
 
 .taboo_login_bar_text {
    padding: 15px;
+}
+
+/* taboo ready bar */
+
+.taboo_ready_bar {
+   background-color: orange;
+}
+
+/* taboo notifications table */
+
+.taboo_notifications_table {
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   width: 100%;
+   z-index: 1000;
+   padding: 5px;
+   border-spacing: 10px;
+}
+
+.taboo_notification_info {
+   background-color: rgba(200, 255, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+.taboo_notification_error {
+   background-color: rgba(255, 200, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
 }

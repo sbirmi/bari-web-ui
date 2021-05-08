@@ -35,11 +35,11 @@ class TabooLoginBar extends TabooWidgetBase {
                                        this.connect_click,
                                        "text");
 
-      this.cell_class(0, 0, "right");
+      this.cell_class(0, 0, "taboo_login_bar_alias_cell right");
       this.cell_content_add(0, 0, create_span("Alias", "taboo_login_bar_text text"));
       this.cell_content_add(0, 0, this.alias);
 
-      this.cell_class(0, 1, "taboo_login_bar_team_cell");
+      this.cell_class(0, 1, "taboo_login_bar_team_cell center");
       this.cell_content_add(0, 1, create_span("Team", "taboo_login_bar_text text"));
       this.cell_content_add(0, 1, this.team);
 
@@ -57,6 +57,7 @@ class TabooLoginBar extends TabooWidgetBase {
          team = 0;
       }
       login_bar.nw.send(["JOIN", login_bar.alias.value, team]);
+      login_bar.hide();
    }
 
    updateHostParameters() {
@@ -73,9 +74,31 @@ class TabooLoginBar extends TabooWidgetBase {
    }
 }
 
+class TabooReadyBar extends TabooWidgetBase {
+/*
+ *  -------------------------------------------------------
+ *  |                     [ Ready ]                       |
+ *  -------------------------------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 1, 1, "taboo_ready_bar width100");
+
+      this.ready_btn = create_button(this, "", "Ready", this.ready_click, "text");
+      this.cell_content_set(0, 0, this.ready_btn);
+      this.cell_class(0, 0, "center");
+   }
+
+   ready_click(ev) {
+      var ready_bar = ev.target.creator;
+      ready_bar.nw.send(["READY"]);
+   }
+
+}
+
 class TabooRoom extends Ui {
    constructor(gid, div) {
       super(div);
+      this.ui_notifications = new UiNotifications(this.div, 3000, "taboo_notifications_table");
       this.gid = gid;
 
       this.nw = new Network("NwTaboo:" + gid, "taboo:" + gid,
@@ -94,6 +117,20 @@ class TabooRoom extends Ui {
       // Create other widgets here
 
       this.login_bar = new TabooLoginBar(this, this.nw, this.div);
+      this.ready_bar = new TabooReadyBar(this, this.nw, this.div);
+      this.ready_bar.hide();
+   }
+
+   // UI helpers ----------------------------------------------------
+
+   show_error_msg(msg) {
+      var obj = create_span(msg, "head2");
+      this.ui_notifications.add_msg(obj, "taboo_notification_error");
+   }
+
+   show_info_msg(msg) {
+      var obj = create_span(msg, "head2");
+      this.ui_notifications.add_msg(obj, "taboo_notification_info");
    }
 
    // Message handling ----------------------------------------------
@@ -109,11 +146,20 @@ class TabooRoom extends Ui {
       }
 
       if (jmsg[0] == "JOIN-BAD") {
-         // TODO
+         room.show_error_msg(jmsg[1]);
+         room.login_bar.show();
+         room.login_bar.alias.focus();
       }
 
       if (jmsg[0] == "JOIN-OKAY") {
-         // TODO
+         room.show_info_msg("Joined as " + jmsg[1] + " in team " + jmsg[2]);
+         room.ready_bar.show();
+         room.ready_bar.ready_btn.focus();
+      }
+
+      if (jmsg[0] == "READY-BAD") {
+         room.show_error_msg(jmsg[1]);
+         room.ready_bar.hide();
       }
    }
 
