@@ -7,8 +7,9 @@ class UiNotifications extends Table {
       window.rows = [];
    }
    timeout_cb(ev) {
-      var row = window.ui_rows.pop();
+      var row = window.ui_rows[0];
       row.remove();
+      window.ui_rows = window.ui_rows.splice(1);
    }
    add_msg(objMsg, cls="") {
       var row = this.add_row([objMsg]);
