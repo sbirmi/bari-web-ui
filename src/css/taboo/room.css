@@ -7,3 +7,23 @@
    overflow-x: hidden;
 }
 
+/* login bar related */
+.taboo_login_bar {
+   background: orange;
+}
+
+.taboo_login_bar_team_cell {
+   width: 250px;
+}
+
+.taboo_login_bar_btn_cell {
+   width: 150px;
+}
+
+.taboo_login_bar_alias {
+   width: 150px;
+}
+
+.taboo_login_bar_text {
+   padding: 15px;
+}
