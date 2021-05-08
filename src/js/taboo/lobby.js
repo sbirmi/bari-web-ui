@@ -1,13 +1,5 @@
 console.log("Loading taboo/lobby.js");
 
-function d7_ele_count(obj) {
-   var count=0;
-   for (var a in obj) {
-      count++;
-   }
-   return count;
-}
-
 function taboo_lobby_checkbox(creator, label_txt, value, checked=true) {
    var div = create_div(creator, "");
    var ele = create_checkbox(creator, "");
@@ -85,9 +77,7 @@ class TabooLobby extends Ui {
       // Outer table
       this.outer_table = new Table(this.div, 2, 1);
       this.outer_table.cell_class(0, 0, "lobby_title head1");
-      this.outer_table.cell_content_add(0, 0, create_span("Taboo Lobby &nbsp; "));
-      this.outer_table.cell_content_add(0, 0,
-         create_link("/taboo/help.html", create_span("[help]", "text"), true));
+      this.outer_table.cell_content_add(0, 0, create_span("Taboo Lobby"));
 
       // Host table
       this.host_table = new Table(this.outer_table.cell(1, 0), 0, 2, "width100");
@@ -97,7 +87,7 @@ class TabooLobby extends Ui {
          this.host_btn]);
 
       //Host parameter inputs
-      this.numTeams = create_drop_down(this, "taboolobby_numTeams",
+      this.num_teams = create_drop_down(this, "taboolobby_numTeams",
          [1, 2, 3, 4], 2, "text");
       this.duration = create_drop_down(this, "taboolobby_duration",
          [30, 60, 90, 120], 60, "text");
@@ -119,15 +109,15 @@ class TabooLobby extends Ui {
       }
 
       this.host_table.add_row([
-         create_span("Number of Teams", "text"),
-         this.numTeams]);
+         create_span("Number of teams", "text"),
+         this.num_teams]);
 
       this.host_table.add_row([
-         create_span("Turn Duration (sec)", "text"),
+         create_span("Turn duration (seconds)", "text"),
          this.duration]);
       
       this.host_table.add_row([
-         create_span("Number of Rounds", "text"),
+         create_span("Number of turns per player", "text"),
          this.numTurns]);
 
       // Right align right column except the checkbox rows
@@ -162,16 +152,7 @@ class TabooLobby extends Ui {
       div.appendChild(create_span(" " + rcvd_status[0]["gameState"],
                                   "text"));
       cell.appendChild(div);
-
-      // ["GAME-STATUS", <path:str>, 
-      //   {"gameState": <str>,    WAITING_FOR_GAME_TO_START, WAITING_FOR_KICKOFF, TURN, GAME_OVER
-      //    "clientCount": {teamId<int>:{plyrName<str>:clientCount<int>}},
-      //    "hostParameters": <dict>,
-      //    "winners": [winnerTeam<int>,winnerTeam<int>,...]
-      //   }
-      // ]
       
-
       function showParams(msg, key){
          var div = create_div(this, "")
          
@@ -197,9 +178,14 @@ class TabooLobby extends Ui {
    onmessage(jmsg) {
       // this = Network instance
       var lobby = this.cls_lobby;
-      console.log("Got msg")
       if (jmsg[0] == "GAME-STATUS") {
-         console.log("Got GAME-STATUS")
+         // ["GAME-STATUS", <path:str>, 
+         //   {"gameState": <str>,    WAITING_FOR_GAME_TO_START, WAITING_FOR_KICKOFF, TURN, GAME_OVER
+         //    "clientCount": {teamId<int>:{plyrName<str>:clientCount<int>}},
+         //    "hostParameters": <dict>,
+         //    "winners": [winnerTeam<int>,winnerTeam<int>,...]
+         //   }
+         // ]
          if (jmsg[1].startsWith(lobby.gname + ":")) {
             var gid = Number(jmsg[1].split(/:/)[ 1 ]);
             if (gid in lobby.gid_to_row) {
@@ -221,6 +207,7 @@ class TabooLobby extends Ui {
          console.log(jmsg);
       }
    }
+
    host_click(ev) {
       var lobby = ev.target.creator;
       var wordsets = [];
@@ -231,7 +218,7 @@ class TabooLobby extends Ui {
       }
 
       var hostParams = {
-         "numTeams": Number(lobby.numTeams.value),
+         "numTeams": Number(lobby.num_teams.value),
          "turnDurationSec": Number(lobby.duration.value),
          "wordSets": wordsets,
          "numTurns": Number(lobby.numTurns.value)
