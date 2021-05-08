@@ -27,7 +27,7 @@ class TabooLoginBar extends TabooWidgetBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui, 1, 3, "taboo_login_bar width100");
 
-      this.host_params_processed = false;
+      this.host_params_event = null;
       this.game_over = false;
 
       this.alias = create_input_text(this, "", "taboo_login_bar_alias text");
@@ -50,7 +50,35 @@ class TabooLoginBar extends TabooWidgetBase {
       this.alias.focus();
    }
 
-   process_game_over() {
+   process_error(tev) {
+      this.hide();
+   }
+
+   process_host_parameters(tev) {
+      if (this.host_params_event) { return; } // Don't process twice
+
+      this.host_params_event = tev;
+
+      for (var i=1; i <= tev.num_teams; ++i) {
+         var option = document.createElement("option");
+         option.value = i;
+         option.text = i;
+         this.team.appendChild(option);
+      }
+   }
+
+   process_join_bad(tev) {
+      this.room.show_error_msg(tev.reason);
+      this.show();
+      this.alias.focus();
+   }
+
+   process_join_okay(tev) {
+      this.room.show_info_msg("Joined as " + tev.alias + " in team " + tev.team_id);
+      this.hide();
+   }
+
+   process_game_over(tev) {
       this.game_over = true;
       this.hide();
    }
@@ -65,19 +93,6 @@ class TabooLoginBar extends TabooWidgetBase {
       login_bar.nw.send(["JOIN", login_bar.alias.value, team]);
       login_bar.hide();
    }
-
-   updateHostParameters() {
-      if (this.host_params_processed) { return; } // Don't process twice
-
-      for (var i=1; i <= this.room.host_parameters["numTeams"]; ++i) {
-         var option = document.createElement("option");
-         option.value = i;
-         option.text = i;
-         this.team.appendChild(option);
-      }
-
-      this.host_params_processed = true;
-   }
 }
 
 class TabooReadyBar extends TabooWidgetBase {
@@ -89,16 +104,44 @@ class TabooReadyBar extends TabooWidgetBase {
    constructor(room, nw, parent_ui) {
       super(room, nw, parent_ui, 1, 1, "taboo_ready_bar width100");
 
+      this.game_started = false;
+
       this.ready_btn = create_button(this, "", "Ready", this.ready_click, "text");
       this.cell_content_set(0, 0, this.ready_btn);
       this.cell_class(0, 0, "center");
+
+      this.hide();
    }
 
    ready_click(ev) {
       var ready_bar = ev.target.creator;
       ready_bar.nw.send(["READY"]);
+      ready_bar.hide();
    }
 
+   process_join_okay(tev) {
+      if (this.game_started) { return; }
+      this.show();
+      this.ready_btn.focus();
+   }
+
+   process_error(tev) {
+      this.hide();
+   }
+
+   process_ready_bad(tev) {
+      this.room.show_error_msg(tev.reason);
+      this.hide();
+   }
+
+   process_turn(tev) {
+      this.game_started = true;
+      this.hide();
+   }
+
+   process_game_over(tev) {
+      this.hide();
+   }
 }
 
 class TabooWaitForKickoff extends TabooWidgetBase {
@@ -134,9 +177,25 @@ class TabooWaitForKickoff extends TabooWidgetBase {
       wfk.nw.send(["KICKOFF"]);
    }
 
-   process_game_over() {
+   process_error(tev) {
+      this.hide();
+   }
+
+   process_turn(tev) {
+      this.hide();
+   }
+
+   process_join_okay(tev) {
+      this.refresh();
+   }
+
+   process_game_over(tev) {
       this.game_over = true;
       this.hide();
+   }
+
+   process_wait_for_kickoff(tev) {
+      this.update_alias(tev.turn_id, tev.alias);
    }
 
    update_alias(turn_id, alias) {
@@ -182,63 +241,51 @@ class TabooTurnWordWidget extends TabooWidgetBase {
       this.cell_class(0, 0, "taboo_turn_word_secret_cell center");
       this.cell_class(1, 0, "taboo_turn_word_disallowed_cell center top");
 
-      this.jmsg = null;
+      this.last_tev = null;
       this.game_over = false;
    }
 
-   process_game_over() {
+   process_game_over(tev) {
       this.game_over = true;
       this.hide();
    }
 
-   process_turn_msg(jmsg) {
+   process_turn(tev) {
       if (this.game_over) {
          return;
       }
 
-      //["TURN",
-      // turn<int>,
-      // wordIdx<int>,
-      // {"team": <int>,
-      //  "player": <str>,
-      //  "state": IN_PLAY,
-      // }
-      //]
-      if (this.jmsg &&                     // Some word has been received already
-          (jmsg[1] < this.jmsg[1] ||       // Older turn ID
-           (jmsg[1] == this.jmsg[1] &&     // Same turn but older
-            jmsg[2] < this.jmsg[2]))) {    //   word ID
+      if (this.last_tev &&                           // Some word has been received already
+          (tev.turn_id < this.last_tev.turn_id ||    // Older turn ID
+           (tev.turn_id == this.last_tev.turn_id &&  // Same turn but older
+            tev.word_id < this.last_tev.word_id))) { //   word ID
          // Receiving messages out of order. Ignore older message
          return;
       }
 
-      this.jmsg = jmsg;
+      this.last_tev = tev;
 
       clear_contents(this.cell(0, 0));
       clear_contents(this.cell(1, 0));
 
-      var word_state = jmsg[3]["state"];
-      if (word_state != "IN_PLAY") {      // Only show the word if it is in
+      if (tev.state != "IN_PLAY") {      // Only show the word if it is in
          return;                          // play
       }
 
-      var word_idx = jmsg[2];
-      var secret_display = word_idx + ".";   // "1."
-      if ("secret" in jmsg[3]) {
-         secret_display += " " + jmsg[3]["secret"];  // "1. <word>"
+      var secret_display = tev.word_id + ".";
+      if (tev.secret) {
+         secret_display += " " + tev.secret;  // "1. <word>"
 
-         for (var idx in jmsg[3]["disallowed"]) {
-            var disallowed = jmsg[3]["disallowed"][idx];
+         for (var idx in tev.disallowed) {
             if (idx > 0) {
                this.cell_content_add(1, 0, create_line_break());
             }
             this.cell_content_add(1, 0,
-               create_span(disallowed, "taboo_turn_word_disallowed head1"));
+               create_span(tev.disallowed[idx], "taboo_turn_word_disallowed head1"));
          }
       }
       this.cell_content_set(0, 0, create_span(secret_display, "taboo_turn_word_secret head1"));
       this.show();
-      this.room.wfk.hide();
    }
 }
 
@@ -257,19 +304,24 @@ class TabooRoom extends Ui {
       this.host_parameters = null;
       this.game_over = false;
 
+      this.widgets = [this];
+
       this.init_display();
+   }
+
+   add_widget(widget) {
+      this.widgets.push(widget);
    }
 
    init_display() {
       // Create other widgets here
 
-      this.login_bar = new TabooLoginBar(this, this.nw, this.div);
-      this.ready_bar = new TabooReadyBar(this, this.nw, this.div);
-      this.ready_bar.hide();
+      this.add_widget(this.login_bar = new TabooLoginBar(this, this.nw, this.div));
+      this.add_widget(this.ready_bar = new TabooReadyBar(this, this.nw, this.div));
 
-      this.wfk = new TabooWaitForKickoff(this, this.nw, this.div);
+      this.add_widget(this.wfk = new TabooWaitForKickoff(this, this.nw, this.div));
 
-      this.turn_word_widget = new TabooTurnWordWidget(this, this.nw, this.div);
+      this.add_widget(this.turn_word_widget = new TabooTurnWordWidget(this, this.nw, this.div));
    }
 
    // UI helpers ----------------------------------------------------
@@ -287,65 +339,23 @@ class TabooRoom extends Ui {
    // Message handling ----------------------------------------------
 
    onmessage(jmsg) {
-      var room = this.room || this; // this => the network object
+      var room = this.room || this; // this => the network object if called on
+                                    // receiving a message. If invoked manually,
+                                    // it is this class instance
 
-      if (jmsg[0] == "HOST-PARAMETERS") {
-         // ["HOST-PARAMETERS", {"numTeams": 1, "turnDurationSec": 30, "wordSets": ["test"], "numTurns": 1}]
-         room.host_parameters = jmsg[1];
-         room.login_bar.updateHostParameters();
-         return;
+      var taboo_ev = taboo_get_event(jmsg);
+
+      if (taboo_ev == null) { return; }
+
+      for (var widget of room.widgets) {
+         if (taboo_ev.handler_name in widget) {
+            widget[taboo_ev.handler_name](taboo_ev);
+         }
       }
+   }
 
-      if (jmsg[0] == "JOIN-BAD") {
-         room.show_error_msg(jmsg[1]);
-         room.login_bar.show();
-         room.login_bar.alias.focus();
-         return;
-      }
-
-      if (jmsg[0] == "JOIN-OKAY") {
-         room.show_info_msg("Joined as " + jmsg[1] + " in team " + jmsg[2]);
-         room.ready_bar.show();
-         room.ready_bar.ready_btn.focus();
-
-         room.wfk.refresh();
-         return;
-      }
-
-      if (jmsg[0] == "READY-BAD") {
-         room.show_error_msg(jmsg[1]);
-         room.ready_bar.hide();
-         return;
-      }
-
-      if (jmsg[0] == "WAIT-FOR-KICKOFF") {
-         // ["WAIT-FOR-KICKOFF", turn<int>, "player": <str>]
-         room.wfk.update_alias(jmsg[1], jmsg[2]);
-         return;
-      }
-
-      if (jmsg[0] == "TURN") {
-         room.turn_word_widget.process_turn_msg(jmsg);
-         return;
-      }
-
-      if (jmsg[0] == "GAME-OVER") {
-         room.login_bar.process_game_over();
-         room.turn_word_widget.process_game_over();
-         room.wfk.process_game_over();
-         return;
-      }
-
-      if (jmsg[0] == "ERROR") {
-         room.login_bar.hide();
-         room.turn_word_widget.hide();
-         room.wfk.hide();
-         room.show_error_msg("Room not created yet");
-         return;
-      }
-
-      console.log("Unhandled message");
-      console.log(jmsg);
+   process_error(tev) {
+      this.show_error_msg("Room not created yet");
    }
 
    // Other socket events -------------------------------------------
