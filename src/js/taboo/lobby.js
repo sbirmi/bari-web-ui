@@ -98,11 +98,11 @@ class TabooLobby extends Ui {
 
       //Host parameter inputs
       this.numTeams = create_drop_down(this, "taboolobby_numTeams",
-         [2,3,4], 2, "text");
+         [1, 2, 3, 4], 2, "text");
       this.duration = create_drop_down(this, "taboolobby_duration",
          [30, 60, 90, 120], 60, "text");
       this.numTurns = create_drop_down(this, "taboolobby_numTurns",
-         [1,2,3,4], 1, "text");
+         [1, 2, 3, 4], 1, "text");
 
       // WordSet row
       var wordset_rowi = 1;
