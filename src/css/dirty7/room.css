@@ -139,10 +139,6 @@
    background-color: lightblue;
 }
 
-.d7_score_board_total {
-   background-color: lightgreen;
-}
-
 .d7_score_board_inner_table {
    background-image: linear-gradient(to right, white, lightgrey);
 }

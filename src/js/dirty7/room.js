@@ -331,21 +331,22 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       for (var alias in data) {
          this.alias_to_idx[alias] = count++;
       }
-      this.container_table = new Table(this.title_table.cell(1, 0), 2, count + 1, "d7_score_board");
+      this.container_table = new Table(this.title_table.cell(1, 0), 1, count + 1, "d7_score_board");
       this.ui = this.title_table.ui;
 
       this.cell_inner_table = [];
 
       // Populate first row
+      this.cell_inner_table[0] = []; // Row 0 has the total sum
       for (var alias in this.alias_to_idx) {
          var idx = this.alias_to_idx[alias];
 
-         this.container_table.cell_class(0, idx + 1, "d7_score_board_header center");
-         this.container_table.cell_content_add(0, idx + 1,
-                                               create_span(alias, "head2"));
+         this.cell_inner_table[0][idx+1] = new Table(this.container_table.cell(0, idx+1),
+                                     1, 2, "width100");
+         this.cell_inner_table[0][idx+1].cell_class(0, 1, "d7_score_board_inner_table_score");
 
-         this.container_table.cell_class(1, idx + 1, "d7_score_board_total center");
-         this.container_table.cell_content_add(1, idx + 1, create_span("0", "head2"));
+         this.container_table.cell_class(0, idx + 1, "d7_score_board_header");
+         this.cell_inner_table[0][idx+1].cell_content_set(0, 0, create_span(alias, "head2"));
       }
    }
 
@@ -441,9 +442,8 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
             }
          }
 
-         this.container_table.cell_content_set(this.highest_round_num_seen + 1,
-                                               idx + 1,
-                                               create_span("" + total, "head2"));
+         this.cell_inner_table[0][idx+1].cell_content_set(0, 1,
+             create_span("" + total, "head2"));
       }
    }
 }
