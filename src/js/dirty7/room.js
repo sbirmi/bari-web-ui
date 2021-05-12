@@ -304,11 +304,11 @@ class Dirty7PlayerBoard extends Dirty7UiBase {
 class Dirty7ScoreBoard extends Dirty7UiBase {
 /*
   +-Container-----------------------------+
-  |  | Player 1  | Player 2  | Player 3   |
+  |  | Plyr1  24 | Plyr2  56 | Plyr3   20 |
   |---------------------------------------|
-  | 1| [][][]  0 | [][]    8 |  []     10 |
+  | 3|        12 |        28 |         10 |
   | 2| [][][] 12 | [][]   20 |  []      0 |
-  |  |        12 |        28 |         10 |
+  | 1| [][][]  0 | [][]    8 |  []     10 |
   +---------------------------------------+
 
   Each row cell has two spans: left for cards, right for score
@@ -324,6 +324,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
       this.container_table = null;
    }
+
    init_container_table(data) {
       this.title_table.cell_content_add(0, 0, create_span("Scoreboard", "head2"));
 
@@ -350,8 +351,10 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       }
    }
 
+   /*
+    * Called when hand details (cards held) information is made available
+    */
    update_player_cards(round_num, alias, card_descs) {
-      // this.player_cards_msgs.push(jmsg);
       if (round_num <= this.highest_round_num_seen) {
          // process immediately
          this.update_player_cards_impl(round_num, alias, card_descs);
@@ -373,15 +376,20 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
    }
 
    add_row(round_num) {
-      this.container_table.add_row(null, round_num);
+      // Add a new row after the header
+      this.container_table.add_row(null, 1);
 
-      this.container_table.cell_class(round_num, 0, "d7_score_board_round right");
-      this.container_table.cell_content_add(round_num, 0,
+      // Figure out where the new row was added
+      var num_table_rows = this.container_table.tbody.childElementCount;
+      var row_idx = num_table_rows - round_num; // This might always be 1??
+
+      this.container_table.cell_class(row_idx, 0, "d7_score_board_round right");
+      this.container_table.cell_content_add(row_idx, 0,
                                             create_span("" + round_num, "text"));
 
       this.cell_inner_table[round_num] = [];
       for (var i=1; i < this.container_table.num_cols; ++i) {
-         this.cell_inner_table[round_num][i] = new Table(this.container_table.cell(round_num, i),
+         this.cell_inner_table[round_num][i] = new Table(this.container_table.cell(row_idx, i),
                                      1, 2, "d7_score_board_inner_table width100");
          this.cell_inner_table[round_num][i].cell_class(0, 1, "d7_score_board_inner_table_score");
          this.cell_inner_table[round_num][i].cell_content_set(0, 1, create_span("", "text"));
@@ -401,6 +409,10 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
       this.player_cards_data = new_player_cards_data;
    }
 
+   /*
+    * Called when ROUND-SCORE message with score for each player
+    * is received.
+    */
    update_round_score(round_num, data) {
       if (this.container_table == null) {
          this.init_container_table(data);
@@ -427,6 +439,7 @@ class Dirty7ScoreBoard extends Dirty7UiBase {
 
       this.update_total();
    }
+
    update_total() {
       if (this.container_table == null) { return; }
       if (this.highest_round_num_seen == 0) { return; }
