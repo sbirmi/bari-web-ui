@@ -1,5 +1,17 @@
 console.log("Loading taboo/lobby.js");
 
+function taboo_pretty_print_state(state) {
+   var s = "";
+
+   var tokens = state.split("_");
+   for (var i in tokens) {
+      var token = tokens[i].toLowerCase();
+      tokens[i] = token;
+   }
+   tokens[0] = tokens[0][0].toUpperCase() + tokens[0].substring(1);
+   return tokens.join(" ");
+}
+
 function taboo_lobby_checkbox(creator, label_txt, value, checked=true) {
    var div = create_div(creator, "");
    var ele = create_checkbox(creator, "");
@@ -32,31 +44,15 @@ function taboo_lobby_checkbox(creator, label_txt, value, checked=true) {
 | | numTeams                   [2 v ] | |
 | | wordSets            [ MultChoice] | |
 | | Duration (sec)          [ 30 v  ] | |
-| | Rounds                    [ 1 v ] | |
+| | Turns per player          [ 1 v ] | |
 | +-----------------------------------+ |
 |                                       |
-| +-Waiting---------------------------+ |
-| |Waiting for players                | |
+| +-----------------------------------+ |
+| |Existing rooms                     | |
 | +-----------------------------------+ |
 | | HostParameters                  |^| |
 | |                                 | | |
 | |                                 |v| |
-| +-----------------------------------+ |
-|                                       |
-| +-Running---------------------------+ |
-| |Running rooms                      | |
-| +-----------------------------------+ |
-| | chat:30 - 5 clients             |^| |
-| | chat:29 - 3 clients             | | |
-| | chat:28 - 4 clients             |v| |
-| +-----------------------------------+ |
-|                                       |
-| +-Completed-------------------------+ |
-| |Completed rooms                    | |
-| +-----------------------------------+ |
-| | chat:30 - 5 clients             |^| |
-| | chat:29 - 3 clients             | | |
-| | chat:28 - 4 clients             |v| |
 | +-----------------------------------+ |
 +---------------------------------------+
 
@@ -87,24 +83,22 @@ class TabooLobby extends Ui {
          this.host_btn]);
 
       //Host parameter inputs
-      this.num_teams = create_drop_down(this, "taboolobby_numTeams",
-         [1, 2, 3, 4], 2, "text");
-      this.duration = create_drop_down(this, "taboolobby_duration",
-         [30, 60, 90, 120], 60, "text");
-      this.numTurns = create_drop_down(this, "taboolobby_numTurns",
-         [1, 2, 3, 4], 1, "text");
+      this.num_teams = create_drop_down(this, "", [1, 2, 3, 4], 2, "text");
+      this.duration = create_drop_down(this, "", [30, 60, 90, 120], 60, "text");
+      this.num_turns = create_drop_down(this, "", [1, 2, 3, 4], 1, "text");
 
       // WordSet row
       var wordset_rowi = 1;
       this.host_table.add_row();
-      this.host_table.cell(wordset_rowi, 0).appendChild(create_span("WordSets", "text"));
+      this.host_table.cell(wordset_rowi, 0).appendChild(create_span("Word sets", "text"));
 
-      this.wordSets = [];
-      var wordSet_choices = [["test", "Test"],
-                         ];
-      for (var choice of wordSet_choices) {
+      this.word_sets = [];
+      var word_set_choices = [
+         ["test", "Test"],
+      ];
+      for (var choice of word_set_choices) {
          var ele_div = taboo_lobby_checkbox(this, choice[1], choice[0]);
-         this.wordSets.push(ele_div[0]);
+         this.word_sets.push(ele_div[0]);
          this.host_table.cell(wordset_rowi, 1).appendChild(ele_div[1]);
       }
 
@@ -118,7 +112,7 @@ class TabooLobby extends Ui {
       
       this.host_table.add_row([
          create_span("Number of turns per player", "text"),
-         this.numTurns]);
+         this.num_turns]);
 
       // Right align right column except the checkbox rows
       for (var i=0; i < 5; ++i) {
@@ -145,34 +139,42 @@ class TabooLobby extends Ui {
       clear_contents(cell);
 
       var a = create_link("/taboo/" + gid,
-                         create_span("Room #" + gid, "text"));
+                          create_span("Room #" + gid, "text"));
 
       var div = create_div(this, "", "taboolobby_room_row");
       div.appendChild(a);
-      div.appendChild(create_span(" " + rcvd_status[0]["gameState"],
+      div.appendChild(create_span(" " + taboo_pretty_print_state(rcvd_status[0]["gameState"]),
                                   "text"));
       cell.appendChild(div);
-      
-      function showParams(msg, key){
-         var div = create_div(this, "")
-         
-         if (key == "clientCount") {
-            var first = true;
-            for (var alias in rcvd_status[0][key]) {
-               div.appendChild(create_span((first ? "" : ",  " ) + msg + alias + JSON.stringify(rcvd_status[0][key][alias]), "text"));
-               first = false;
-            }
-         }
-         else {
-            div.appendChild(create_span(msg + ": " + JSON.stringify(rcvd_status[0][key]), "text"));
-         }
 
+      var host_params = rcvd_status[0]["hostParameters"];
+      var client_count = rcvd_status[0]["clientCount"];
+
+      // Show players by team
+      for (var team_id=1; team_id <= host_params["numTeams"]; ++team_id) {
+         var div = create_div(this, "")
+         var msg = "Team " + team_id + ":";
+         for (var plyr in client_count["" + team_id]) { msg += " " + plyr; }
+         var cls = "text";
+         if (rcvd_status[0]["winners"].indexOf(team_id) >= 0) {
+            cls += " bold"; // winners appear in bold
+         }
+         div.appendChild(create_span(msg, cls));
+         div.appendChild(create_line_break());
          cell.appendChild(div);
       }
 
-      showParams("Team", "clientCount")
-      showParams("HostParams", "hostParameters")
-      showParams("Winners", "winners")
+      // Show wordsets
+      function show_param(label, val) {
+         var div = create_div(this, "")
+         div.appendChild(create_span(label + ": " + val));
+         div.appendChild(create_line_break());
+         cell.appendChild(div);
+      }
+
+      show_param("Word sets", host_params["wordSets"].join(", "));
+      show_param("Turn duration (seconds)", host_params["turnDurationSec"]);
+      show_param("Number of turns per player", host_params["numTurns"]);
    }
 
    onmessage(jmsg) {
@@ -211,21 +213,20 @@ class TabooLobby extends Ui {
    host_click(ev) {
       var lobby = ev.target.creator;
       var wordsets = [];
-      for (var wordSet of lobby.wordSets) {
-         if (wordSet.checked) {
-            wordsets.push(wordSet.taboo_value);
+      for (var word_set of lobby.word_sets) {
+         if (word_set.checked) {
+            wordsets.push(word_set.taboo_value);
          }
       }
 
-      var hostParams = {
+      var host_params = {
          "numTeams": Number(lobby.num_teams.value),
          "turnDurationSec": Number(lobby.duration.value),
          "wordSets": wordsets,
-         "numTurns": Number(lobby.numTurns.value)
+         "numTurns": Number(lobby.num_turns.value)
       };
 
-      var msg = ["HOST", "taboo", hostParams
-      ];
+      var msg = ["HOST", "taboo", host_params];
       lobby.nw.send(msg);
    }
 
