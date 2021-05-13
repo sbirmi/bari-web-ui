@@ -17,7 +17,7 @@ function taboo_lobby_checkbox(creator, label_txt, value, checked=true) {
    var ele = create_checkbox(creator, "");
    ele.taboo_value = value;
    div.appendChild(ele);
-   div.appendChild(create_span(label_txt));
+   div.appendChild(create_span(label_txt, "text"));
    ele.checked = checked;
    return [ele, div];
 }
