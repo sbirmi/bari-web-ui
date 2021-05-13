@@ -173,7 +173,7 @@ class TabooLobby extends Ui {
       }
 
       show_param("Word sets", host_params["wordSets"].join(", "));
-      show_param("Turn duration (seconds)", host_params["turnDurationSec"]);
+      show_param("Turn duration", host_params["turnDurationSec"] + " seconds");
       show_param("Number of turns per player", host_params["numTurns"]);
    }
 
