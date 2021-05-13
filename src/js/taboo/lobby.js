@@ -154,7 +154,18 @@ class TabooLobby extends Ui {
       for (var team_id=1; team_id <= host_params["numTeams"]; ++team_id) {
          var div = create_div(this, "")
          var msg = "Team " + team_id + ":";
-         for (var plyr in client_count["" + team_id]) { msg += " " + plyr; }
+
+         var plyr_idx = 0;
+         for (var plyr in client_count["" + team_id]) {
+            if (plyr_idx == 0) {
+               msg += " ";
+            } else {
+               msg += ", ";
+            }
+            msg += plyr;
+            plyr_idx++;
+         }
+
          var cls = "text";
          if (rcvd_status[0]["winners"].indexOf(team_id) >= 0) {
             cls += " bold"; // winners appear in bold
