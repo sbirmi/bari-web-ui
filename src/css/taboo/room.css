@@ -7,6 +7,17 @@
    overflow-x: hidden;
 }
 
+/* host params related */
+
+.taboo_host_params_bar {
+   background: lightblue;
+}
+
+.taboo_host_param {
+   padding-left: 15px;
+   padding-right: 15px;
+}
+
 /* login bar related */
 
 .taboo_login_bar {

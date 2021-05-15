@@ -18,6 +18,33 @@ class TabooWidgetBase extends Table {
    show() { this.ui.style.display = "block"; } // Unhide the widget
 }
 
+class TabooHostParamsBar extends TabooWidgetBase {
+/**
+ *  -------------------------------------------------------
+ *  |    Alias [     ]  | Team [ Auto  v ] | [ Connect ]  |
+ *  -------------------------------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 1, 1, "taboo_host_params_bar width100");
+      this.host_params = null;
+   }
+
+   process_host_parameters(tev) {
+      if (this.host_params) {
+         // receiving a duplicate message
+         return;
+      }
+      this.host_params = tev;
+      function param_span(lbl, val) {
+         return create_span(lbl + ": " + val, "taboo_host_param text");
+      }
+      this.cell_content_add(0, 0, param_span("Word sets", tev.word_sets.join(", ")));
+      this.cell_content_add(0, 0, param_span("Teams", tev.num_teams));
+      this.cell_content_add(0, 0, param_span("Turn duration", tev.turn_duration_sec + " sec"));
+      this.cell_content_add(0, 0, param_span("Turns per player", tev.num_turns));
+   }
+}
+
 class TabooLoginBar extends TabooWidgetBase {
 /**
  *  -------------------------------------------------------
@@ -316,6 +343,7 @@ class TabooRoom extends Ui {
    init_display() {
       // Create other widgets here
 
+      this.add_widget(new TabooHostParamsBar(this, this.nw, this.div));
       this.add_widget(this.login_bar = new TabooLoginBar(this, this.nw, this.div));
       this.add_widget(this.ready_bar = new TabooReadyBar(this, this.nw, this.div));
 
