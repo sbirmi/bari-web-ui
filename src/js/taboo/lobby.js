@@ -240,7 +240,5 @@ class TabooLobby extends Ui {
       var msg = ["HOST", "taboo", host_params];
       lobby.nw.send(msg);
    }
-
-  
 }
 
