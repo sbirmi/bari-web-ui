@@ -54,6 +54,10 @@
    font-weight: bold;
 }
 
+.strike {
+   text-decoration: line-through;
+}
+
 /* notifications related */
 
 .notifications_table {
