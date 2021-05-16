@@ -90,8 +90,15 @@
 
 /* taboo turn word widget */
 
+.taboo_turn_timer {
+}
+
 .taboo_turn_word {
    width: 400px;
+}
+
+.taboo_turn_word_timer_cell {
+   padding: 5px;
 }
 
 .taboo_turn_word_secret_cell {

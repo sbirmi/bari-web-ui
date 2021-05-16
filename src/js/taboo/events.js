@@ -72,6 +72,7 @@ class TabooTurnEvent extends TabooEvent {
    //  wordIdx<int>,
    //  {"team": <int>,
    //   "player": <str>,
+   //   "utcTimeout": <str>,
    //   "secret": <str>,
    //   "disallowed": [<str1>, ...],
    //   "state": COMPLETED | TIMED_OUT | DISCARDED,
@@ -84,6 +85,7 @@ class TabooTurnEvent extends TabooEvent {
       this.word_id = jmsg[2];
       this.team_id = jmsg[3]['team'];
       this.alias = jmsg[3]['player'];
+      this.utc_timeout = jmsg[3]['utcTimeout'];
       this.secret = jmsg[3]['secret'];
       this.disallowed = jmsg[3]['disallowed'];
       this.state = jmsg[3]['state'];
