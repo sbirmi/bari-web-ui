@@ -291,10 +291,11 @@ class TabooTurnWordWidget extends TabooWidgetBase {
  * --------------------------------------------------
  */
    constructor(room, nw, parent_ui) {
-      super(room, nw, parent_ui, 2, 1, "taboo_turn_word");
+      super(room, nw, parent_ui, 3, 1, "taboo_turn_word");
 
-      this.cell_class(0, 0, "taboo_turn_word_secret_cell center");
-      this.cell_class(1, 0, "taboo_turn_word_disallowed_cell center top");
+      this.cell_class(0, 0, "taboo_turn_word_timer_cell center");
+      this.cell_class(1, 0, "taboo_turn_word_secret_cell center");
+      this.cell_class(2, 0, "taboo_turn_word_disallowed_cell center top");
 
       this.last_tev = null;
       this.game_over = false;
@@ -303,6 +304,20 @@ class TabooTurnWordWidget extends TabooWidgetBase {
    process_game_over(tev) {
       this.game_over = true;
       this.hide();
+   }
+
+   timer_callback() {
+      if (!this.last_tev || this.last_tev.state != "IN_PLAY") {
+         return;
+      }
+
+      var now = new Date();
+      var now_ts = (now.getTime() + now.getTimezoneOffset() * 60 * 1000) / 1000;
+
+      var txt = "" + Math.floor((this.last_tev.utc_timeout - now_ts)*10)/10;
+      this.cell_content_set(0, 0, create_span(txt, "taboo_turn_timer head2 center"));
+
+      setTimeout(this.timer_callback.bind(this), 100);
    }
 
    process_turn(tev) {
@@ -320,12 +335,14 @@ class TabooTurnWordWidget extends TabooWidgetBase {
 
       this.last_tev = tev;
 
-      clear_contents(this.cell(0, 0));
       clear_contents(this.cell(1, 0));
+      clear_contents(this.cell(2, 0));
 
       if (tev.state != "IN_PLAY") {      // Only show the word if it is in
          return;                          // play
       }
+
+      setTimeout(this.timer_callback.bind(this), 100);
 
       var secret_display = tev.word_id + ".";
       if (tev.secret) {
@@ -333,13 +350,13 @@ class TabooTurnWordWidget extends TabooWidgetBase {
 
          for (var idx in tev.disallowed) {
             if (idx > 0) {
-               this.cell_content_add(1, 0, create_line_break());
+               this.cell_content_add(2, 0, create_line_break());
             }
-            this.cell_content_add(1, 0,
-               create_span(tev.disallowed[idx], "taboo_turn_word_disallowed head1"));
+            this.cell_content_add(2, 0,
+               create_span(tev.disallowed[idx], "taboo_turn_word_disallowed head1 center"));
          }
       }
-      this.cell_content_set(0, 0, create_span(secret_display, "taboo_turn_word_secret head1"));
+      this.cell_content_set(1, 0, create_span(secret_display, "taboo_turn_word_secret head1 center"));
       this.show();
    }
 
