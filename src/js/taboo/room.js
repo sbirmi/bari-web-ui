@@ -278,6 +278,10 @@ class TabooTurnAndTeamsWidget extends TabooWidgetBase {
       this.cell_class(0, 1, "top right");
       this.cell(0, 0).style.width = "400px";
    }
+
+   process_game_over() {
+      this.hide();
+   }
 }
 
 class TabooTurnWordWidget extends TabooWidgetBase {
