@@ -80,13 +80,16 @@
 /* taboo wait for kickoff widget */
 
 .taboo_wfk {
-   height: 300px;
+}
+
+/* taboo turn and teams widget */
+
+.taboo_turn_team {
 }
 
 /* taboo turn word widget */
 
 .taboo_turn_word {
-   height: 300px;
 }
 
 .taboo_turn_word_secret_cell {
@@ -106,4 +109,47 @@
 }
 
 .taboo_turn_word_disallowed {
+}
+
+/* taboo teams widget */
+
+.taboo_teams {
+   border: solid 2px white;
+}
+
+.taboo_team_header {
+   background: grey;
+}
+
+.taboo_team_player {
+   padding-left: 5px;
+   padding-right: 5px;
+}
+
+.taboo_player_not_ready {
+   color: grey;
+}
+
+.taboo_player_ready {
+   color: black;
+}
+
+@keyframes taboo_turn_blink {
+   0%, 100% { background-color: rgb(128, 255, 128); }
+   50%      { background-color: rgb(255, 128, 128); }
+}
+
+.taboo_player_turn {
+   border-radius: 5px;
+   animation: taboo_turn_blink 2s infinite;
+}
+
+.taboo_player_wfk {
+   border-radius: 5px;
+   animation: taboo_turn_blink 0.5s infinite;
+}
+
+.taboo_my_player {
+   border-radius: 5px;
+   border: solid 1px black;
 }

@@ -1,5 +1,11 @@
 console.log("Loading taboo/room.js");
 
+function obj_length(obj) {
+   var count = 0;
+   for (var i in obj) { count++; }
+   return count;
+}
+
 /**
  * Each Widget is fundamentally a table (it could be a table of size 1 x 1
  * and we can add more rows and columns to it
@@ -137,6 +143,9 @@ class TabooReadyBar extends TabooWidgetBase {
       this.cell_content_set(0, 0, this.ready_btn);
       this.cell_class(0, 0, "center");
 
+      this.my_alias = null;
+      this.ready_players = [];
+
       this.hide();
    }
 
@@ -146,10 +155,22 @@ class TabooReadyBar extends TabooWidgetBase {
       ready_bar.hide();
    }
 
+   process_player_status(tev) {
+      if (tev.ready && this.ready_players.indexOf(tev.alias) == -1) {
+         this.ready_players.push(tev.alias);
+      }
+      if (tev.alias == this.my_alias && tev.ready) {
+         this.hide();
+      }
+   }
+
    process_join_okay(tev) {
       if (this.game_started) { return; }
-      this.show();
-      this.ready_btn.focus();
+      this.my_alias = tev.alias;
+      if (this.ready_players.indexOf(tev.alias) == -1) { // This player is not ready yet
+         this.show();
+         this.ready_btn.focus();
+      }
    }
 
    process_error(tev) {
@@ -175,14 +196,6 @@ class TabooWaitForKickoff extends TabooWidgetBase {
 /*
  * --------------------------------------------------
  * |                                                |
- * |           Waiting for <player-name>            |
- * |                                                |
- * --------------------------------------------------
- *
- * or
- *
- * --------------------------------------------------
- * |                                                |
  * |                [ START TURN ]                  |
  * |                                                |
  * --------------------------------------------------
@@ -191,12 +204,16 @@ class TabooWaitForKickoff extends TabooWidgetBase {
       super(room, nw, parent_ui, 1, 1, "taboo_wfk width100");
 
       this.start_turn_btn = create_button(this, "", "Start turn", this.start_turn_click, "head2");
-
-      this.turn_id = null;
-      this.alias = null;
-      this.game_over = false;
-
       this.cell_class(0, 0, "center");
+      this.cell_content_set(0, 0, this.start_turn_btn);
+
+      this.game_over = false;
+      this.recent_turnmsg_turn_id = 0;
+      this.recent_wfkmsg_turn_id = 0;
+      this.wfk_alias = null;
+      this.my_alias = null;
+
+      this.hide();
    }
 
    start_turn_click(ev) {
@@ -208,47 +225,58 @@ class TabooWaitForKickoff extends TabooWidgetBase {
       this.hide();
    }
 
-   process_turn(tev) {
-      this.hide();
+   process_join_okay(tev) {
+      this.my_alias = tev.alias;
+      this.refresh();
    }
 
-   process_join_okay(tev) {
+   process_turn(tev) {
+      if (tev.turn_id < this.recent_turnmsg_turn_id) {
+         return;
+      }
+      this.recent_turnmsg_turn_id = tev.turn_id;
+      this.refresh();
+   }
+
+   process_wait_for_kickoff(tev) {
+      if (tev.turn_id < this.recent_wfkmsg_turn_id) {
+         return;
+      }
+      this.recent_wfkmsg_turn_id = tev.turn_id;
+      this.wfk_alias = tev.alias;
       this.refresh();
    }
 
    process_game_over(tev) {
       this.game_over = true;
-      this.hide();
-   }
-
-   process_wait_for_kickoff(tev) {
-      this.update_alias(tev.turn_id, tev.alias);
-   }
-
-   update_alias(turn_id, alias) {
-      if (this.game_over) {
-         return;
-      }
-
-      this.turn_id = turn_id;
-      this.alias = alias;
-
-      this.show();
-      this.room.turn_word_widget.hide();
-
       this.refresh();
    }
 
    refresh() {
-      if (!this.alias) { return; }
-
-      if (this.alias == this.room.login_bar.alias.value) {
-         // My turn
-         this.cell_content_set(0, 0, this.start_turn_btn);
+      if (!this.game_over &&
+          this.recent_wfkmsg_turn_id > this.recent_turnmsg_turn_id &&
+          this.my_alias == this.wfk_alias) {
+         this.show();
       } else {
-         // Someone else's turn
-         this.cell_content_set(0, 0, create_span("Wait for " + this.alias, "head1"));
+         this.hide();
       }
+   }
+}
+
+class TabooTurnAndTeamsWidget extends TabooWidgetBase {
+/*
+ * ----------------------------------------------------
+ * | <TurnWordWidget>      | <TeamWidget>             |
+ * |                       |                          |
+ * |                       |                          |
+ * |                       |                          |
+ * ----------------------------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 1, 2, "taboo_turn_team width100");
+      this.cell_class(0, 0, "top left");
+      this.cell_class(0, 1, "top right");
+      this.cell(0, 0).style.width = "400px";
    }
 }
 
@@ -314,6 +342,185 @@ class TabooTurnWordWidget extends TabooWidgetBase {
       this.cell_content_set(0, 0, create_span(secret_display, "taboo_turn_word_secret head1"));
       this.show();
    }
+
+   process_wait_for_kickoff(tev) {
+      this.hide();
+   }
+}
+
+class TabooTeamsWidget extends TabooWidgetBase {
+/*
+ * -------------------------------
+ * | Team 1  | Team 2  | Team 3  |
+ * |         |         |         |
+ * |         |         |         |
+ * |         |         |         |
+ * -------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 0, 0, "taboo_teams width100");
+      this.host_params = null;
+
+      this.tev_by_team_id = {}; // latest tev by team-id
+      this.player_status = {};  // name --> PlayerStatusTev
+
+      this.div_by_player = {};
+      this.max_team_members = 0;
+
+      this.my_alias = null;
+
+      this.current_turn_tev = null;
+      this.current_wfk_tev = null;
+   }
+
+   process_join_okay(tev) {
+      this.my_alias = tev.alias;
+      this.refresh_alias(tev.alias);
+   }
+
+   process_wait_for_kickoff(tev) {
+      if (this.current_wfk_tev && tev.turnId < this.current_wfk_tev.turn_id) {
+         return;
+      }
+      this.current_wfk_tev = tev;
+      this.refresh_alias(tev.alias);
+   }
+
+   process_team_status(tev) {
+      if (tev.team_id in this.tev_by_team_id) {
+         if (obj_length(tev.players) <= obj_length(this.tev_by_team_id[tev.team_id].players)) {
+            return;
+         }
+      }
+      this.tev_by_team_id[tev.team_id] = tev;
+
+      this.max_team_members = Math.max(this.max_team_members, obj_length(tev.players));
+      this.refresh();
+   }
+
+   process_host_parameters(tev) {
+      if (this.host_params) {
+         return;
+      }
+      this.host_params = tev;
+      this.set_cols(tev.num_teams);
+
+      this.refresh();
+   }
+
+   process_player_status(tev) {
+      this.player_status[tev.alias] = tev;
+      this.refresh_alias(tev.alias);
+   }
+
+   process_turn(tev) {
+      // All the criteria to return early
+      if (this.current_turn_tev &&
+          (tev.turn_id < this.current_turn_tev.turn_id ||
+           (tev.turn_id == this.current_turn_tev.turn_id &&
+            (tev.word_id < this.current_turn_tev.word_id ||
+             (tev.word_id == this.current_turn_tev.word_id &&
+              (["COMPLETED", "DISCARDED", "TIMED_OUT"].indexOf(this.current_turn_tev.state) >=0)))))) {
+         return;
+      }
+
+      // Found a new current turn tev
+      var last_alias = this.current_turn_tev ? this.current_turn_tev.alias : null;
+      this.current_turn_tev = tev;
+
+      if (last_alias) {
+         this.refresh_alias(last_alias);
+      }
+
+      this.refresh_alias(tev.alias);
+   }
+
+   refresh_alias(alias) {
+      if (!this.host_params) { return; }
+
+      var div = this.div_by_player[alias];
+      if (!div) { return; }
+
+      clear_contents(div);
+
+      var classes = ["text taboo_team_player"];
+      var player_status = (alias in this.player_status) ? this.player_status[alias] : null;
+
+      // not ready => grey, ready => black
+      if (player_status && player_status.ready) {
+         classes.push("taboo_player_ready");
+      } else {
+         classes.push("taboo_player_not_ready");
+      }
+
+      // 0 connections means strike-through
+      // > 1 connections means bold
+      if (player_status && player_status.num_conns > 1) {
+         classes.push("bold");
+      } else if (!player_status || player_status.num_conns == 0) {
+         classes.push("strike");
+      }
+
+      if (this.current_turn_tev && this.current_turn_tev.alias == alias &&
+          this.current_turn_tev.state == "IN_PLAY") {
+         classes.push("taboo_player_turn");
+      } else if (this.current_wfk_tev && (!this.current_turn_tev || this.current_turn_tev.turn_id < this.current_wfk_tev.turn_id) && this.current_wfk_tev.alias == alias) {
+         classes.push("taboo_player_wfk");
+      }
+
+      if (alias == this.my_alias) {
+         classes.push("taboo_my_player");
+      }
+
+      div.appendChild(create_span(alias, classes.join(" ")));
+   }
+
+   refresh() { // null => refresh all; otherwise only refresh 1 player
+      if (!this.host_params) { return; }
+
+      var num_teams = this.host_params.num_teams;
+      clear_contents(this.tbody);
+
+      var headers = [];
+      for (var i=1; i <= num_teams; ++i) {
+         headers.push(create_span("Team " + i, "text"));
+      }
+
+      this.add_row(headers);
+      for (var i=0; i < num_teams; ++i) {
+         this.cell_class(0, i, "taboo_team_header");
+      }
+
+      this.div_by_player = {};
+
+      for (var rowi=0; rowi < this.max_team_members; ++rowi) {
+         var row_contents = Array(num_teams);
+
+         var row_aliases = [];
+
+         for (var i=0; i < num_teams; ++i) {
+            var teamidx = i + 1;
+
+            if (teamidx in this.tev_by_team_id &&
+                rowi < this.tev_by_team_id[teamidx].players.length) {
+
+               row_contents[i] = create_div(this, "", "");
+
+               var alias = this.tev_by_team_id[teamidx].players[rowi];
+               row_aliases.push(alias);
+
+               this.div_by_player[alias] = row_contents[i];
+            } else {
+               row_contents[i] = create_span("");
+            }
+         }
+         this.add_row(row_contents);
+
+         for (var alias of row_aliases) {
+            this.refresh_alias(alias);
+         }
+      }
+   }
 }
 
 class TabooRoom extends Ui {
@@ -347,9 +554,12 @@ class TabooRoom extends Ui {
       this.add_widget(this.login_bar = new TabooLoginBar(this, this.nw, this.div));
       this.add_widget(this.ready_bar = new TabooReadyBar(this, this.nw, this.div));
 
-      this.add_widget(this.wfk = new TabooWaitForKickoff(this, this.nw, this.div));
+      this.add_widget(new TabooWaitForKickoff(this, this.nw, this.div));
 
-      this.add_widget(this.turn_word_widget = new TabooTurnWordWidget(this, this.nw, this.div));
+      var turn_and_team_widget = new TabooTurnAndTeamsWidget(this, this.nw, this.div);
+      this.add_widget(turn_and_team_widget);
+      this.add_widget(new TabooTurnWordWidget(this, this.nw, turn_and_team_widget.cell(0, 0)));
+      this.add_widget(new TabooTeamsWidget(this, this.nw, turn_and_team_widget.cell(0, 1)));
    }
 
    // UI helpers ----------------------------------------------------

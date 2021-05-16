@@ -18,6 +18,24 @@ class TabooHostParametersEvent extends TabooEvent {
    }
 }
 
+class TabooTeamStatusEvent extends TabooEvent {
+   constructor(jmsg) {
+      super("process_team_status", jmsg);
+      this.team_id = jmsg[1];
+      this.players = jmsg[2];
+   }
+}
+
+class TabooPlayerStatusEvent extends TabooEvent {
+   constructor(jmsg) {
+      super("process_player_status", jmsg);
+      this.alias = jmsg[1];
+      this.num_conns = jmsg[2]["numConns"];
+      this.ready = jmsg[2]["ready"];
+      this.turns_played = jmsg[2]["turnsPlayed"];
+   }
+}
+
 class TabooJoinBadEvent extends TabooEvent {
    constructor(jmsg) {
       super("process_join_bad", jmsg);
@@ -97,6 +115,8 @@ var taboo_type_events = [
    ["TURN", TabooTurnEvent],
    ["GAME-OVER", TabooGameOverEvent],
    ["ERROR", TabooErrorEvent],
+   ["TEAM-STATUS", TabooTeamStatusEvent],
+   ["PLAYER-STATUS", TabooPlayerStatusEvent],
 ];
 
 function taboo_get_event(jmsg) {

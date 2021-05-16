@@ -149,6 +149,15 @@ class Table {
       parent_ui.appendChild(this.ui);
    }
 
+   // Delayed column setting
+   set_cols(num_cols) {
+      if (this.num_cols == 0) {
+         this.num_cols = num_cols;
+         return true;
+      }
+      return false;
+   }
+
    // Accessors
    row(rowi) {
       if (rowi < 0 || rowi >= this.tbody.childElementCount) { return null; }
