@@ -21,7 +21,7 @@ class TabooWidgetBase extends Table {
    }
 
    hide() { this.ui.style.display = "none"; } // Hide the widget
-   show() { this.ui.style.display = "block"; } // Unhide the widget
+   show() { this.ui.style.display = "table"; } // Unhide the widget
 }
 
 class TabooHostParamsBar extends TabooWidgetBase {
@@ -273,7 +273,7 @@ class TabooTurnAndTeamsWidget extends TabooWidgetBase {
  * ----------------------------------------------------
  */
    constructor(room, nw, parent_ui) {
-      super(room, nw, parent_ui, 1, 2, "taboo_turn_team width100");
+      super(room, nw, parent_ui, 1, 2, "taboo_turn_team");
       this.cell_class(0, 0, "top left");
       this.cell_class(0, 1, "top right");
       this.cell(0, 0).style.width = "400px";
@@ -291,7 +291,7 @@ class TabooTurnWordWidget extends TabooWidgetBase {
  * --------------------------------------------------
  */
    constructor(room, nw, parent_ui) {
-      super(room, nw, parent_ui, 2, 1, "taboo_turn_word width100");
+      super(room, nw, parent_ui, 2, 1, "taboo_turn_word");
 
       this.cell_class(0, 0, "taboo_turn_word_secret_cell center");
       this.cell_class(1, 0, "taboo_turn_word_disallowed_cell center top");
