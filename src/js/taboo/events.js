@@ -99,6 +99,13 @@ class TabooGameOverEvent extends TabooEvent {
    }
 }
 
+class TabooScoreEvent extends TabooEvent {
+   constructor(jmsg) {
+      super("process_score", jmsg);
+      this.score = jmsg[1];
+   }
+}
+
 class TabooErrorEvent extends TabooEvent {
    constructor(jmsg) {
       super("process_error", jmsg);
@@ -119,6 +126,7 @@ var taboo_type_events = [
    ["ERROR", TabooErrorEvent],
    ["TEAM-STATUS", TabooTeamStatusEvent],
    ["PLAYER-STATUS", TabooPlayerStatusEvent],
+   ["SCORE", TabooScoreEvent],
 ];
 
 function taboo_get_event(jmsg) {
