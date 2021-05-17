@@ -1,5 +1,18 @@
 console.log("Loading taboo/room.js");
 
+/* duplicated from taboo/lobby.js */
+function taboo_pretty_print_state(state) {
+   var s = "";
+
+   var tokens = state.split("_");
+   for (var i in tokens) {
+      var token = tokens[i].toLowerCase();
+      tokens[i] = token;
+   }
+   tokens[0] = tokens[0][0].toUpperCase() + tokens[0].substring(1);
+   return tokens.join(" ");
+}
+
 function obj_length(obj) {
    var count = 0;
    for (var i in obj) { count++; }
@@ -496,7 +509,7 @@ class TabooTeamsWidget extends TabooWidgetBase {
       div.appendChild(create_span(alias, classes.join(" ")));
    }
 
-   refresh() { // null => refresh all; otherwise only refresh 1 player
+   refresh() {
       if (!this.host_params) { return; }
 
       var num_teams = this.host_params.num_teams;
@@ -544,6 +557,168 @@ class TabooTeamsWidget extends TabooWidgetBase {
    }
 }
 
+class TurnHistoryWidget extends TabooWidgetBase {
+/**
+ * ---------------------------------------------------------------------------------
+ * | | Team | Player | Word      | Result    | Team 1 (<Total>) | Team 2 (<Total>) |
+ * ---------------------------------------------------------------------------------
+ * |2|   1  | SB     | Foo       | Scored    |       1          |                  |
+ * | |      |        | Bar       | Discarded |                  |        1         |
+ * ---------------------------------------------------------------------------------
+ * |1|   2  | JG     | Lorem     | Timed out |       1          |                  |
+ * | |      |        | Ipsum     | Scored    |                  |        1         |
+ * | |      |        | Falafel   | Scored    |                  |        1         |
+ * ---------------------------------------------------------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 0, 0, "taboo_turn_history");
+
+      this.cols_before_teams = 5;
+
+      this.host_params = null;
+      this.score_tev = null;
+
+      this.turn_words = {}; // tid --> [ list of words ]
+
+      this.row_by_tid_wid = {}; // tid --> { wid --> row }
+   }
+
+   process_host_parameters(tev) {
+      if (this.host_params) {
+         return;
+      }
+
+      this.host_params = tev;
+
+      this.set_cols(this.cols_before_teams + tev.num_teams);
+
+      this.refresh();
+   }
+
+   process_turn(tev) {
+      if (tev.state == "IN_PLAY") {
+         return;
+      }
+
+      if (!(tev.turn_id in this.turn_words)) {
+         this.turn_words[tev.turn_id] = Array(tev.word_id - 1);
+      }
+
+      this.turn_words[tev.turn_id][tev.word_id - 1] = tev;
+
+      this.refresh_row(tev);
+   }
+
+   process_score(tev) {
+      this.score_tev = tev;
+
+      if (!this.host_params) { return; }
+
+      for (var team_id in tev.score) {
+         this.refresh_team_score(parseInt(team_id));
+      }
+   }
+
+   refresh_team_score(team_id) {
+      var score = 0;
+      if (this.score_tev) {
+         score = this.score_tev.score["" + team_id]; // key should be a string
+      }
+      var coli = this.cols_before_teams + team_id - 1;
+      this.cell_content_set(0, coli, create_span("Team " + team_id + " (" + score + ")", "text bold"));
+   }
+
+   refresh_row(tev) {
+      if (!this.host_params) { return; }
+
+      if (!(tev.turn_id in this.row_by_tid_wid)) {
+         this.row_by_tid_wid[tev.turn_id] = {};
+      }
+
+      var row = null;
+      var is_new_row = false;
+
+      // Find the row
+      if (!(tev.word_id in this.row_by_tid_wid[tev.turn_id])) {
+         // Find the right place to insert
+         row = document.createElement("tr");
+         row.setAttribute("turn_id", tev.turn_id);
+         row.setAttribute("word_id", tev.word_id);
+         this.row_by_tid_wid[tev.turn_id][tev.word_id] = row;
+         is_new_row = true;
+      } else {
+         row = this.row_by_tid_wid[tev.turn_id][tev.word_id];
+      }
+
+      // Update the row contents
+      clear_contents(row);
+      row.insertCell().appendChild(create_span("" + tev.turn_id, ""));
+      row.insertCell().appendChild(create_span("" + tev.team_id, ""));
+      row.insertCell().appendChild(create_span(tev.alias, ""));
+      row.insertCell().appendChild(create_span(tev.secret, ""));
+      row.insertCell().appendChild(create_span(taboo_pretty_print_state(tev.state), ""));
+
+      for (var i=0; i < this.host_params.num_teams; ++i) {
+         var team_id = i + 1;
+         var cell = row.insertCell();
+         if (tev.score.indexOf(team_id) >= 0) {
+            cell.appendChild(create_span("1", ""));
+         }
+      }
+
+      for (var cell of row.children) {
+         cell.className = "taboo_turn_val center";
+      }
+
+      // Insert the row at the right place
+      if (is_new_row) {
+         for (var existing_row of this.tbody.children) {
+            if (existing_row == row) { continue; }
+
+            var existing_row_tid = existing_row.getAttribute("turn_id");
+            var existing_row_wid = existing_row.getAttribute("word_id");
+
+            if (!existing_row_tid || !existing_row_wid) { continue; }
+
+            if (existing_row_tid > tev.turn_id) { continue; }
+
+            if (existing_row_tid == tev.turn_id &&
+                existing_row_wid > tev.word_id) {
+               continue;
+            }
+
+            this.tbody.insertBefore(row, existing_row);
+            return;
+         }
+
+         // Went through all the rows and didn't insert it yet
+         this.tbody.appendChild(row);
+      }
+   }
+
+   refresh() {
+      if (!this.host_params) { return; }
+
+      var num_teams = this.host_params.num_teams;
+      clear_contents(this.tbody);
+
+      var header_row = this.add_row();
+
+      this.cell_content_set(0, 1, create_span("Team", "text bold"));
+      this.cell_content_set(0, 2, create_span("Player", "text bold"));
+      this.cell_content_set(0, 3, create_span("Word", "text bold"));
+      this.cell_content_set(0, 4, create_span("Result", "text bold"));
+
+      for (var i=1; i <= num_teams; i++) {
+         this.refresh_team_score(i);
+      }
+
+      for (var i=0; i < this.cols_before_teams + num_teams; ++i) {
+         this.cell_class(0, i, "taboo_turn_header");
+      }
+   }
+}
+
 class TabooRoom extends Ui {
    constructor(gid, div) {
       super(div);
@@ -569,11 +744,9 @@ class TabooRoom extends Ui {
    }
 
    init_display() {
-      // Create other widgets here
-
       this.add_widget(new TabooHostParamsBar(this, this.nw, this.div));
-      this.add_widget(this.login_bar = new TabooLoginBar(this, this.nw, this.div));
-      this.add_widget(this.ready_bar = new TabooReadyBar(this, this.nw, this.div));
+      this.add_widget(new TabooLoginBar(this, this.nw, this.div));
+      this.add_widget(new TabooReadyBar(this, this.nw, this.div));
 
       this.add_widget(new TabooWaitForKickoff(this, this.nw, this.div));
 
@@ -581,6 +754,8 @@ class TabooRoom extends Ui {
       this.add_widget(turn_and_team_widget);
       this.add_widget(new TabooTurnWordWidget(this, this.nw, turn_and_team_widget.cell(0, 0)));
       this.add_widget(new TabooTeamsWidget(this, this.nw, turn_and_team_widget.cell(0, 1)));
+
+      this.add_widget(new TurnHistoryWidget(this, this.nw, this.div));
    }
 
    // UI helpers ----------------------------------------------------

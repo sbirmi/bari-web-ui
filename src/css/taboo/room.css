@@ -163,3 +163,20 @@
    border-radius: 5px;
    border: solid 1px black;
 }
+
+/* taboo turn history */
+
+.taboo_turn_history {
+   margin: auto;
+   border-radius: 5px;
+   border: #f0f0f0 solid 1px;
+}
+
+.taboo_turn_header {
+   background-color: #f0f0f0;
+   padding: 2px 10px;
+}
+
+.taboo_turn_val {
+  
+}
