@@ -716,6 +716,16 @@ class TurnHistoryWidget extends TabooWidgetBase {
       for (var i=0; i < this.cols_before_teams + num_teams; ++i) {
          this.cell_class(0, i, "taboo_turn_header");
       }
+
+      // Refresh all known tevs
+      for (var team_id in this.turn_words) {
+         var words = this.turn_words[team_id];
+         for (var tev of words) {
+            if (tev) {
+               this.refresh_row(tev);
+            }
+         }
+      }
    }
 }
 
