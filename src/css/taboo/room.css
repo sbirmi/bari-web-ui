@@ -1,0 +1,194 @@
+/* page level */
+
+.taboo_page {
+   border-collapse: collapse;
+   padding: 0px;
+   margin: 0px;
+   overflow-x: hidden;
+}
+
+/* host params related */
+
+.taboo_host_params_bar {
+   background: lightblue;
+}
+
+.taboo_host_param {
+   padding-left: 15px;
+   padding-right: 15px;
+}
+
+/* login bar related */
+
+.taboo_login_bar {
+   background: lightblue;
+}
+
+.taboo_login_bar_alias_cell {
+   width: 300px;
+}
+
+.taboo_login_bar_team_cell {
+   width: 250px;
+}
+
+.taboo_login_bar_btn_cell {
+}
+
+.taboo_login_bar_alias {
+   width: 150px;
+}
+
+.taboo_login_bar_text {
+   padding: 15px;
+}
+
+/* taboo ready bar */
+
+.taboo_ready_bar {
+   background-color: lightblue;
+}
+
+/* taboo notifications table */
+
+.taboo_notifications_table {
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   width: 100%;
+   z-index: 1000;
+   padding: 5px;
+   border-spacing: 10px;
+}
+
+.taboo_notification_info {
+   background-color: rgba(200, 255, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+.taboo_notification_error {
+   background-color: rgba(255, 200, 200, 0.8);
+   border-radius: 10px;
+   text-align: center;
+   padding: 10px;
+   filter: drop-shadow(2px 2px 2px #a0a0a0);
+}
+
+/* taboo wait for kickoff widget */
+
+.taboo_wfk {
+   background: lightblue;
+}
+
+/* taboo turn and teams widget */
+
+.taboo_turn_team {
+   margin: auto;
+}
+
+/* taboo turn word widget */
+
+.taboo_turn_timer {
+}
+
+.taboo_turn_word {
+   width: 400px;
+   border-radius: 5px;
+   background: #f0f0f0;
+   border: #f0f0f0 solid 1px;
+}
+
+.taboo_turn_word_timer_cell {
+   padding: 5px;
+}
+
+.taboo_turn_word_secret_cell {
+   height: 60px;
+   padding: 15px;
+}
+
+.taboo_turn_word_disallowed_cell {
+   padding: 15px;
+}
+
+.taboo_turn_word_secret {
+   background-color: blue;
+   color: white;
+   padding: 15px;
+   border-radius: 10px;
+}
+
+.taboo_turn_word_disallowed {
+}
+
+/* taboo teams widget */
+
+.taboo_teams {
+   border-radius: 5px;
+   border: solid 1px #f0f0f0;
+}
+
+.taboo_team_header {
+   background: #f0f0f0;
+   width: 200px;
+   padding-left: 5px;
+   padding-right: 5px;
+}
+
+.taboo_team_player {
+   padding-left: 5px;
+   padding-right: 5px;
+}
+
+.taboo_player_not_ready {
+   color: grey;
+}
+
+.taboo_player_ready {
+   color: black;
+}
+
+@keyframes taboo_turn_blink {
+   0%, 100% { background-color: rgb(128, 255, 128); }
+   50%      { background-color: rgb(255, 128, 128); }
+}
+
+.taboo_player_turn {
+   border-radius: 5px;
+   animation: taboo_turn_blink 2s infinite;
+}
+
+.taboo_player_wfk {
+   border-radius: 5px;
+   animation: taboo_turn_blink 0.5s infinite;
+}
+
+.taboo_my_player {
+   border-radius: 5px;
+   border: solid 1px black;
+}
+
+/* taboo move widget */
+
+.taboo_move {
+}
+
+/* taboo turn history */
+
+.taboo_turn_history {
+   margin: auto;
+   border-radius: 5px;
+   border: #f0f0f0 solid 1px;
+}
+
+.taboo_turn_header {
+   background-color: #f0f0f0;
+   padding: 2px 10px;
+}
+
+.taboo_turn_val {
+  
+}
