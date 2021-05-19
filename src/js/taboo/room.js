@@ -306,9 +306,11 @@ class TabooTurnWordWidget extends TabooWidgetBase {
  * |              Disallowed word 2                 |
  * |              Disallowed word 3                 |
  * --------------------------------------------------
+ * |    [ Success ]       |   [ Fail/Discard ]      |
+ * --------------------------------------------------
  */
    constructor(room, nw, parent_ui) {
-      super(room, nw, parent_ui, 3, 1, "taboo_turn_word");
+      super(room, nw, parent_ui, 4, 1, "taboo_turn_word");
 
       this.cell_class(0, 0, "taboo_turn_word_timer_cell center");
       this.cell_class(1, 0, "taboo_turn_word_secret_cell center");
@@ -316,6 +318,10 @@ class TabooTurnWordWidget extends TabooWidgetBase {
 
       this.last_tev = null;
       this.game_over = false;
+   }
+
+   move_cell() {
+      return this.cell(3, 0);
    }
 
    process_game_over(tev) {
@@ -557,6 +563,83 @@ class TabooTeamsWidget extends TabooWidgetBase {
    }
 }
 
+class TabooMoveWidget extends TabooWidgetBase {
+/*
+ * --------------------------------------
+ * |  [ Success ]  |  [ Fail/Discard ]  |
+ * --------------------------------------
+ */
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 1, 2, "taboo_move width100");
+
+      this.last_tev = null;
+      this.my_alias = null;
+
+      this.success_btn = create_button(this, "", "Success",
+                                       this.success_click,
+                                       "text");
+      this.discard_btn = create_button(this, "", "Fail/Discard",
+                                       this.discard_click,
+                                       "text");
+
+      this.cell_class(0, 0, "center");
+      this.cell_content_set(0, 0, this.success_btn);
+
+      this.cell_class(0, 1, "center");
+      this.cell_content_set(0, 1, this.discard_btn);
+
+      this.refresh();
+   }
+
+   process_join_okay(tev) {
+      this.my_alias = tev.alias;
+      this.refresh();
+   }
+
+   process_turn(tev) {
+      if (this.last_tev &&
+          (tev.turn_id < this.last_tev.turn_id ||
+           (tev.turn_id == this.last_tev.turn_id &&
+            tev.word_id < this.last_tev.word_id))) {
+         // Receiving old, out of turn message
+         return;
+      }
+      this.last_tev = tev;
+      this.refresh();
+   }
+
+   refresh() {
+      if (this.last_tev && this.last_tev.alias == this.my_alias &&
+          this.last_tev.state == "IN_PLAY") {
+         this.show();
+      } else {
+         this.hide();
+      }
+   }
+
+   success_click(ev) {
+      var move_widget = ev.target.creator;
+      var last_tev = move_widget.last_tev;
+
+      if (last_tev && last_tev.state == "IN_PLAY") {
+         move_widget.nw.send(["COMPLETED", last_tev.turn_id, last_tev.word_id]);
+      } else {
+         console.log("Can't send COMPLETED now", last_tev);
+      }
+   }
+
+   discard_click(ev) {
+      var move_widget = ev.target.creator;
+      var last_tev = move_widget.last_tev;
+
+      if (last_tev && last_tev.state == "IN_PLAY") {
+         move_widget.nw.send(["DISCARD", last_tev.turn_id, last_tev.word_id]);
+      } else {
+         console.log("Can't send DISCARD now", last_tev);
+      }
+   }
+}
+
 class TurnHistoryWidget extends TabooWidgetBase {
 /**
  * ---------------------------------------------------------------------------------
@@ -625,7 +708,7 @@ class TurnHistoryWidget extends TabooWidgetBase {
          score = this.score_tev.score["" + team_id]; // key should be a string
       }
       var coli = this.cols_before_teams + team_id - 1;
-      this.cell_content_set(0, coli, create_span("Team " + team_id + " (" + score + ")", "text bold"));
+      this.cell_content_set(0, coli, create_span("Team " + team_id + " (" + score + ")", "text"));
    }
 
    refresh_row(tev) {
@@ -704,10 +787,11 @@ class TurnHistoryWidget extends TabooWidgetBase {
 
       var header_row = this.add_row();
 
-      this.cell_content_set(0, 1, create_span("Team", "text bold"));
-      this.cell_content_set(0, 2, create_span("Player", "text bold"));
-      this.cell_content_set(0, 3, create_span("Word", "text bold"));
-      this.cell_content_set(0, 4, create_span("Result", "text bold"));
+      this.cell_content_set(0, 0, create_span("Turn", "text"));
+      this.cell_content_set(0, 1, create_span("Team", "text"));
+      this.cell_content_set(0, 2, create_span("Player", "text"));
+      this.cell_content_set(0, 3, create_span("Word", "text"));
+      this.cell_content_set(0, 4, create_span("Result", "text"));
 
       for (var i=1; i <= num_teams; i++) {
          this.refresh_team_score(i);
@@ -762,8 +846,11 @@ class TabooRoom extends Ui {
 
       var turn_and_team_widget = new TabooTurnAndTeamsWidget(this, this.nw, this.div);
       this.add_widget(turn_and_team_widget);
-      this.add_widget(new TabooTurnWordWidget(this, this.nw, turn_and_team_widget.cell(0, 0)));
+      var turn_word_widget = new TabooTurnWordWidget(this, this.nw, turn_and_team_widget.cell(0, 0));
+      this.add_widget(turn_word_widget);
       this.add_widget(new TabooTeamsWidget(this, this.nw, turn_and_team_widget.cell(0, 1)));
+
+      this.add_widget(new TabooMoveWidget(this, this.nw, turn_word_widget.move_cell()));
 
       this.add_widget(new TurnHistoryWidget(this, this.nw, this.div));
    }

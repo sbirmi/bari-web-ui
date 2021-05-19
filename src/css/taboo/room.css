@@ -21,7 +21,7 @@
 /* login bar related */
 
 .taboo_login_bar {
-   background: orange;
+   background: lightblue;
 }
 
 .taboo_login_bar_alias_cell {
@@ -46,7 +46,7 @@
 /* taboo ready bar */
 
 .taboo_ready_bar {
-   background-color: orange;
+   background-color: lightblue;
 }
 
 /* taboo notifications table */
@@ -80,6 +80,7 @@
 /* taboo wait for kickoff widget */
 
 .taboo_wfk {
+   background: lightblue;
 }
 
 /* taboo turn and teams widget */
@@ -95,6 +96,9 @@
 
 .taboo_turn_word {
    width: 400px;
+   border-radius: 5px;
+   background: #f0f0f0;
+   border: #f0f0f0 solid 1px;
 }
 
 .taboo_turn_word_timer_cell {
@@ -123,12 +127,15 @@
 /* taboo teams widget */
 
 .taboo_teams {
-   border: solid 2px white;
+   border-radius: 5px;
+   border: solid 1px #f0f0f0;
 }
 
 .taboo_team_header {
-   background: grey;
+   background: #f0f0f0;
    width: 200px;
+   padding-left: 5px;
+   padding-right: 5px;
 }
 
 .taboo_team_player {
@@ -162,6 +169,11 @@
 .taboo_my_player {
    border-radius: 5px;
    border: solid 1px black;
+}
+
+/* taboo move widget */
+
+.taboo_move {
 }
 
 /* taboo turn history */
