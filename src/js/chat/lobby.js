@@ -45,7 +45,7 @@ class ChatLobby extends Ui {
       this.host_table = new Table(this.outer_table.cell(1, 0), 1, 2, "width100");
       this.host_table.cell_content_add(0, 0, create_span("Start a new room", "head2"));
       this.host_table.cell_class(0, 1, "right");
-      this.host_btn = create_button(this, "chatlobby_host_btn", "host", this.host_click, "text");
+      this.host_btn = create_button(this, "chatlobby_host_btn", "Host", this.host_click, "text");
       this.host_table.cell_content_add(0, 1, this.host_btn);
 
 
