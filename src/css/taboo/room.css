@@ -18,6 +18,12 @@
    padding-right: 15px;
 }
 
+/* disconnect bar related */
+
+.taboo_disconnected_bar {
+   background: #a0a0ff;
+}
+
 /* login bar related */
 
 .taboo_login_bar {

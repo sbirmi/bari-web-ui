@@ -64,6 +64,35 @@ class TabooHostParamsBar extends TabooWidgetBase {
    }
 }
 
+class TabooDisconnectedBar extends TabooWidgetBase {
+   constructor(room, nw, parent_ui) {
+      super(room, nw, parent_ui, 1, 1, "taboo_disconnected_bar width100");
+
+      this.reconnect_btn = create_button(this, "", "Reconnect",
+                                         this.reconnect_click.bind(this),
+                                         "text");
+      this.cell_class(0, 0, "center");
+      this.cell_content_set(0, 0, this.reconnect_btn);
+      this.hide();
+   }
+
+   reconnect_click(ev) {
+      if (this.room.login_bar.alias.value) {
+         this.nw.new_connection();
+      } else {
+         this.nw.new_connection();
+      }
+   }
+
+   onclose(ev) {
+      this.show();
+   }
+
+   onopen(ev) {
+      this.hide();
+   }
+}
+
 class TabooLoginBar extends TabooWidgetBase {
 /**
  *  -------------------------------------------------------
@@ -94,6 +123,14 @@ class TabooLoginBar extends TabooWidgetBase {
       this.cell_content_add(0, 2, this.connect_btn);
 
       this.alias.focus();
+   }
+
+   onopen() {
+      this.show();
+   }
+
+   onclose() {
+      this.hide();
    }
 
    process_error(tev) {
@@ -821,8 +858,8 @@ class TabooRoom extends Ui {
 
       this.nw = new Network("NwTaboo:" + gid, "taboo:" + gid,
                             this.onmessage,
-                            this.onclose,
-                            this.onopen);
+                            this.onclose.bind(this),
+                            this.onopen.bind(this));
       this.nw.room = this;
 
       this.host_parameters = null;
@@ -839,7 +876,8 @@ class TabooRoom extends Ui {
 
    init_display() {
       this.add_widget(new TabooHostParamsBar(this, this.nw, this.div));
-      this.add_widget(new TabooLoginBar(this, this.nw, this.div));
+      this.add_widget(this.login_bar = new TabooLoginBar(this, this.nw, this.div));
+      this.add_widget(new TabooDisconnectedBar(this, this.nw, this.div));
       this.add_widget(new TabooReadyBar(this, this.nw, this.div));
 
       this.add_widget(new TabooWaitForKickoff(this, this.nw, this.div));
@@ -893,12 +931,21 @@ class TabooRoom extends Ui {
 
    // WebSocket disconnected
    onclose(ev) {
-      var room = this.room;  // this => the network object
+      room.show_error_msg("Disconnected");
 
+      for (var widget of room.widgets) {
+         if (widget != this && "onclose" in widget) {
+            widget.onclose(ev);
+         }
+      }
    }
 
    // WebSocket connected
    onopen(ev) {
-      var room = this.room; // this => the network object
+      for (var widget of this.widgets) {
+         if (widget != this && "onopen" in widget) {
+             widget.onopen(ev);
+         }
+      }
    }
 }
