@@ -114,6 +114,8 @@
 .taboo_turn_word_secret_cell {
    height: 60px;
    padding: 15px;
+   background: blue;
+   border-radius: 10px;
 }
 
 .taboo_turn_word_disallowed_cell {
@@ -121,13 +123,14 @@
 }
 
 .taboo_turn_word_secret {
-   background-color: blue;
    color: white;
    padding: 15px;
-   border-radius: 10px;
 }
 
 .taboo_turn_word_disallowed {
+   border-left: solid 4px;
+   margin-left: 5px;
+   padding-left: 5px;
 }
 
 /* taboo teams widget */
