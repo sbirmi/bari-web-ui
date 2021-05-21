@@ -44,8 +44,11 @@ class TabooHostParamsBar extends TabooWidgetBase {
  *  -------------------------------------------------------
  */
    constructor(room, nw, parent_ui) {
-      super(room, nw, parent_ui, 1, 1, "taboo_host_params_bar width100");
+      super(room, nw, parent_ui, 1, 2, "taboo_host_params_bar width100");
       this.host_params = null;
+
+      this.cell_class(0, 1, "right");
+      this.cell_content_set(0, 1, create_link("/taboo/help.html", create_span("[?]"), true));
    }
 
    process_host_parameters(tev) {

@@ -79,3 +79,7 @@ def serveDirty7Help():
 @app.route("/taboo/<int:gid>")
 def serveTaboo(gid):
     return render_template("taboo/index.html", gid=gid)
+
+@app.route("/taboo/help.html")
+def serveTabooHelp():
+    return render_template("taboo/help.html")
