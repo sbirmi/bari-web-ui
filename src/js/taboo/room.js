@@ -354,7 +354,7 @@ class TabooTurnWordWidget extends TabooWidgetBase {
 
       this.cell_class(0, 0, "taboo_turn_word_timer_cell center");
       this.cell_class(1, 0, "taboo_turn_word_secret_cell center");
-      this.cell_class(2, 0, "taboo_turn_word_disallowed_cell center top");
+      this.cell_class(2, 0, "taboo_turn_word_disallowed_cell top");
 
       this.last_tev = null;
       this.game_over = false;
