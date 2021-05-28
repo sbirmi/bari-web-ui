@@ -375,7 +375,7 @@ class TabooTurnWordWidget extends TabooWidgetBase {
       }
 
       var now = new Date();
-      var now_ts = (now.getTime() + now.getTimezoneOffset() * 60 * 1000) / 1000;
+      var now_ts = now.getTime() / 1000;
 
       var txt = "" + Math.floor((this.last_tev.utc_timeout - now_ts)*10)/10;
       this.cell_content_set(0, 0, create_span(txt, "taboo_turn_timer head2 center"));
