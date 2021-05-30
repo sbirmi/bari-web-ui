@@ -15,7 +15,7 @@ pip3 install flask
 # Running the web-server
 ```
 source bari-web-ui/bin/activate
-cd src
+cd bari-web-ui/src
 ./start_frontend.sh
 ```
 
