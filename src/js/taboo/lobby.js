@@ -73,7 +73,9 @@ class TabooLobby extends Ui {
       // Outer table
       this.outer_table = new Table(this.div, 2, 1);
       this.outer_table.cell_class(0, 0, "lobby_title head1");
-      this.outer_table.cell_content_add(0, 0, create_span("Taboo Lobby"));
+      this.outer_table.cell_content_add(0, 0, create_span("Taboo Lobby &nbsp; "));
+      this.outer_table.cell_content_add(0, 0,
+         create_link("/taboo/help.html", create_span("[help]", "text"), true));
 
       // Host table
       this.host_table = new Table(this.outer_table.cell(1, 0), 0, 2, "width100");
@@ -83,24 +85,21 @@ class TabooLobby extends Ui {
          this.host_btn]);
 
       //Host parameter inputs
+      this.word_set_choices = {};
+      this.word_set_choices["Test"] = "test";
+
+      var word_set_names = []
+      for (var word_set_name in this.word_set_choices) { word_set_names.push(word_set_name); }
+      this.word_set = create_drop_down(this, "", word_set_names, word_set_names[0], "text");
+
       this.num_teams = create_drop_down(this, "", [1, 2, 3, 4], 2, "text");
       this.duration = create_drop_down(this, "", [30, 60, 90, 120], 60, "text");
       this.num_turns = create_drop_down(this, "", [1, 2, 3, 4], 1, "text");
 
       // WordSet row
-      var wordset_rowi = 1;
-      this.host_table.add_row();
-      this.host_table.cell(wordset_rowi, 0).appendChild(create_span("Word sets", "text"));
-
-      this.word_sets = [];
-      var word_set_choices = [
-         ["test", "Test"],
-      ];
-      for (var choice of word_set_choices) {
-         var ele_div = taboo_lobby_checkbox(this, choice[1], choice[0]);
-         this.word_sets.push(ele_div[0]);
-         this.host_table.cell(wordset_rowi, 1).appendChild(ele_div[1]);
-      }
+      this.host_table.add_row([
+         create_span("Word set", "text"),
+         this.word_set]);
 
       this.host_table.add_row([
          create_span("Number of teams", "text"),
@@ -117,10 +116,6 @@ class TabooLobby extends Ui {
       // Right align right column except the checkbox rows
       for (var i=0; i < 5; ++i) {
          this.host_table.cell_class(i, 1, "right");
-      }
-      for (var rowi of [wordset_rowi]) {
-         this.host_table.cell_class(rowi, 0, "left top");
-         this.host_table.cell_class(rowi, 1, "left");
       }
 
       // Existing rooms
@@ -223,17 +218,10 @@ class TabooLobby extends Ui {
 
    host_click(ev) {
       var lobby = ev.target.creator;
-      var wordsets = [];
-      for (var word_set of lobby.word_sets) {
-         if (word_set.checked) {
-            wordsets.push(word_set.taboo_value);
-         }
-      }
-
       var host_params = {
          "numTeams": Number(lobby.num_teams.value),
          "turnDurationSec": Number(lobby.duration.value),
-         "wordSets": wordsets,
+         "wordSets": [lobby.word_set_choices[lobby.word_set.value]],
          "numTurns": Number(lobby.num_turns.value)
       };
 
