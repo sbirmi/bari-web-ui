@@ -375,7 +375,7 @@ class TabooTurnWordWidget extends TabooWidgetBase {
       }
 
       var now = new Date();
-      var now_ts = (now.getTime() + now.getTimezoneOffset() * 60 * 1000) / 1000;
+      var now_ts = now.getTime() / 1000;
 
       var txt = "" + Math.floor((this.last_tev.utc_timeout - now_ts)*10)/10;
       this.cell_content_set(0, 0, create_span(txt, "taboo_turn_timer head2 center"));
@@ -778,7 +778,10 @@ class TurnHistoryWidget extends TabooWidgetBase {
       row.insertCell().appendChild(create_span("" + tev.turn_id, ""));
       row.insertCell().appendChild(create_span("" + tev.team_id, ""));
       row.insertCell().appendChild(create_span(tev.alias, ""));
-      row.insertCell().appendChild(create_span(tev.secret, ""));
+      var cell_word = row.insertCell();
+      cell_word.appendChild(create_span(tev.secret, "bold"));
+      cell_word.appendChild(create_line_break());
+      cell_word.appendChild(create_span(tev.disallowed.join(", "), ""));
       row.insertCell().appendChild(create_span(taboo_pretty_print_state(tev.state), ""));
 
       for (var i=0; i < this.host_params.num_teams; ++i) {
@@ -792,6 +795,7 @@ class TurnHistoryWidget extends TabooWidgetBase {
       for (var cell of row.children) {
          cell.className = "taboo_turn_val center";
       }
+      cell_word.className = "taboo_turn_word_cell left";
 
       // Insert the row at the right place
       if (is_new_row) {
