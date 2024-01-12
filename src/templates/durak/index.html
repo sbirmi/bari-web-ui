@@ -1,8 +1,26 @@
 <html>
 
+   <head>
+      <title>Durak room #{{gid}}</title>
+      <script src="/js/ui.js"></script>
+      <script src="/js/network.js"></script>
+      <script src="/js/cards/cards.js"></script>
+      <script src="/js/durak/room.js"></script>
+
+   <link rel="stylesheet" href="/css/common.css"></link>
+      <link rel="stylesheet" href="/css/card.css"></link>
+   <link rel="stylesheet" href="/css/durak/room.css"></link>
+   </head>
+
 <script>
 <!--
+/*
 var conn = null;
+const SuitMap = new Map([
+   ["S", "♠"],
+   ["C", "♣"],
+   ["H", "♥"],
+   ["D", "♦"]]);
 
 var domain_port = window.location.host.split(":");
 var domain = domain_port[0];
@@ -177,11 +195,6 @@ function parseCard(token) {
    return [suit, parseInt(rank)];
 }
 
-const SuitMap = new Map([
-   ["S", "♠"],
-   ["C", "♣"],
-   ["H", "♥"],
-   ["D", "♦"]]);
 function cardFromJmsg(suitRank) {
    return SuitMap.get(suitRank[0]) + suitRank[1];
 }
@@ -238,20 +251,26 @@ function join() {
       connect();
    }
 }
-
+*/
 -->
 </script>
 
 <body>
 
+   <div id="divdurakroom"></div>
+   <script>
+      <!--
+      var room = new DurakRoom({{gid}}, document.getElementById("divdurakroom"));
+      -->
+   </script>
+
+<!--
 <table>
 <tr>
    <td>Player name</td>
-   <td><input id=player_name value=""></td>
    <td><input type=button value="Join" onClick="join();"></td>
 </tr>
 </table>
-
 
 <table>
 
@@ -292,7 +311,7 @@ function join() {
 </tr>
 
 </table>
-
+-->
 
 </body>
 </html>

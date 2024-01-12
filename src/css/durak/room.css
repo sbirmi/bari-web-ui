@@ -1,0 +1,11 @@
+/* page level */
+
+/* player board related */
+.durak_player_board {
+}
+
+.durak_attack_defend {
+   float: left;
+   margin-right: 10px;
+   margin-bottom: 20px;
+}
