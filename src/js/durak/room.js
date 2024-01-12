@@ -20,7 +20,7 @@ function card_to_jmsg(suit_rank) {
 
 class PlayerBoard {
    /*
-    *  Name | Mode + Buttons | Player Hand | Attack
+    *  Name | Mode + Disconnected + Buttons | Player Hand | Attack
     *
     *
     */
@@ -37,11 +37,11 @@ class PlayerBoard {
       this.player_hand = new PlayerHand(this.table.cell(0, 2), "");
       this.table.cell_content_set(0, 2, this.player_hand.ui);
 
-      this.attack_btn = create_button(this, "attack_btn", "Attack", this.do_attack_btn);
-      this.done_btn = create_button(this, "done_btn", "Done", this.do_done_btn);
+      this.attack_btn = create_button(this, "attack_btn", "Attack", this.do_attack_btn, "durak_play_button");
+      this.done_btn = create_button(this, "done_btn", "Done", this.do_done_btn, "durak_play_button");
 
-      this.defend_btn = create_button(this, "defend_btn", "Defend", this.do_defend_btn);
-      this.giveup_btn = create_button(this, "giveup_btn", "Give up", this.do_giveup_btn);
+      this.defend_btn = create_button(this, "defend_btn", "Defend", this.do_defend_btn, "durak_play_button");
+      this.giveup_btn = create_button(this, "giveup_btn", "Give up", this.do_giveup_btn, "durak_play_button");
 
       this.undefended_attacks = [];
    }
@@ -70,7 +70,7 @@ class PlayerBoard {
          return;
       }
 
-      room.nw.send(["DEFEND", [ [ card_to_jmsg(attack_cards[0]), card_to_jmsg(defend_cards[0]) ] ]]);
+      room.nw.send(["DEFEND", [ [attack_cards[0], defend_cards[0]] ]]);
    }
 
    do_giveup_btn(ev) {
@@ -119,15 +119,24 @@ class PlayerBoard {
       }
    }
 
-   set_action_mode(attacker, defender, done) {
+   set_action_mode(attacker, defender, done, num_clients) {
       const mode_row = 0;
       const mode_col = 1;
 
+      this.table.cell_content_clear(mode_row, mode_col);
+
+      if (num_clients == 0) {
+         this.table.cell_content_add(mode_row, mode_col, create_span("(disconnected)"));
+         this.table.cell_content_add(mode_row, mode_col, create_line_break());
+      }
+
       if (defender) {
-         this.table.cell_content_set(mode_row, mode_col, create_span("defender"));
+         this.table.cell_content_add(mode_row, mode_col, create_span("defender"));
 
          if (this.player_name == room.my_name) {
+            this.table.cell_content_add(mode_row, mode_col, create_line_break());
             this.table.cell_content_add(mode_row, mode_col, this.defend_btn);
+            this.table.cell_content_add(mode_row, mode_col, create_line_break());
             this.table.cell_content_add(mode_row, mode_col, this.giveup_btn);
             this.player_hand.set_mode_defender();
          } else {
@@ -136,14 +145,16 @@ class PlayerBoard {
 
       } else if (done) {
          var strikethru = document.createElement("s");
-         this.table.cell_content_set(mode_row, mode_col, strikethru);
+         this.table.cell_content_add(mode_row, mode_col, strikethru);
          strikethru.appendChild(create_span("attacker"));
          this.player_hand.set_mode_none();
 
       } else if (attacker) {
-         this.table.cell_content_set(mode_row, mode_col, create_span("attacker"));
+         this.table.cell_content_add(mode_row, mode_col, create_span("attacker"));
          if (this.player_name == room.my_name) {
+            this.table.cell_content_add(mode_row, mode_col, create_line_break());
             this.table.cell_content_add(mode_row, mode_col, this.attack_btn);
+            this.table.cell_content_add(mode_row, mode_col, create_line_break());
             this.table.cell_content_add(mode_row, mode_col, this.done_btn);
             this.player_hand.set_mode_attacker();
          } else {
@@ -151,7 +162,6 @@ class PlayerBoard {
          }
 
       } else {
-         clear_contents(this.table.cell(mode_row, mode_col));
          this.player_hand.set_mode_none();
       }
 
@@ -302,6 +312,31 @@ class JoinRoom {
       var my_name = document.getElementById("player_name").value;
       room.nw.send(["JOIN", my_name]);
    }
+
+   hide() {
+      this.ui.style.display = 'none';
+   }
+}
+
+class GameStatus {
+   constructor(parent_ui) {
+      this.parent_ui = parent_ui;
+      this.ui = create_div(this);
+      this.parent_ui.appendChild(this.ui);
+   }
+
+   clear() {
+      clear_contents(this.ui);
+   }
+
+   set_obj(obj) {
+      this.clear();
+      this.ui.appendChild(obj);
+   }
+
+   add_obj(obj) {
+      this.ui.appendChild(obj);
+   }
 }
 
 class DurakRoom {
@@ -318,11 +353,14 @@ class DurakRoom {
          this.onclose,
          this.onopen);
 
+      this.host_params_msg = null;
       this.round_msg = null;
+      this.player_status_msgs = new Map();
       this.player_turn_order = null;
       this.player_hand_msgs = new Map();
       this.table_cards_msg = null;
 
+      this.game_status = new GameStatus(this.parent_ui);
       this.join_room = new JoinRoom(this.parent_ui, this.nw);
       this.board = new Board(this.parent_ui);
       this.draw_pile = new DrawPile(this.parent_ui, "");
@@ -336,6 +374,16 @@ class DurakRoom {
 
    onmessage(jmsg) {
 
+      if (jmsg[0] == "HOST-PARAMETERS") {
+         room.host_params_msg = jmsg;
+         room.refresh_ui();
+      }
+
+      if (jmsg[0] == "PLAYER-STATUS") {
+         room.player_status_msgs.set(jmsg[1], jmsg);
+         room.refresh_ui();
+      }
+
       if (jmsg[0] == "ROUND") {
          room.round_msg = jmsg;
          room.refresh_ui();
@@ -343,6 +391,7 @@ class DurakRoom {
 
       if (jmsg[0] == "JOIN-OKAY") {
          room.my_name = jmsg[1];
+         room.join_room.hide();
          room.refresh_ui();
       }
 
@@ -361,9 +410,20 @@ class DurakRoom {
    }
 
    onclose(ev) {
+      room.game_status.set_obj(create_span("Disconnected from server. Please refresh page"));
    }
 
    refresh_ui() {
+
+      if (this.host_params_msg && !this.round_msg &&
+          this.host_params_msg[1]["numPlayers"] > this.player_status_msgs.size) {
+         const n = this.host_params_msg[1]["numPlayers"] - this.player_status_msgs.size;
+         const msg = "Waiting for " + n + ((n > 1)?" players":" player");
+         this.game_status.set_obj(create_span(msg));
+      } else {
+         this.game_status.clear();
+      }
+
       if (!this.round_msg) {
          return;
       }
@@ -392,11 +452,12 @@ class DurakRoom {
          }
 
          var player_board = this.player_board.get(player);
-
+         var player_status = this.player_status_msgs.get(player);
          player_board.set_action_mode(
             attackers.includes(player),
             defender == player,
-            done_players.includes(player));
+            done_players.includes(player),
+            player_status?player_status[2]:0);
 
          if (this.table_cards_msg && player in this.table_cards_msg[1]["attacks"]) {
             player_board.set_attacks(this.table_cards_msg[1]["attacks"][player]);

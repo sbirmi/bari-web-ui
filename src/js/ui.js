@@ -195,12 +195,16 @@ class Table {
       return row;
    }
 
+   cell_content_clear(ri, ci) {
+      clear_contents(this.cell(ri, ci));
+   }
+
    cell_content_add(ri, ci, obj) {
       this.cell(ri, ci).appendChild(obj);
    }
 
    cell_content_set(ri, ci, obj) {
-      clear_contents(this.cell(ri, ci));
+      this.cell_content_clear(ri, ci);
       this.cell(ri, ci).appendChild(obj);
    }
 
