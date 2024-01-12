@@ -75,6 +75,16 @@ def serveDirty7Help():
     return render_template("dirty7/help.html")
 
 # -------------------------------------
+# Durak room
+@app.route("/durak/<int:gid>")
+def serveDurak(gid):
+    return render_template("durak/index.html", gid=gid)
+
+@app.route("/durak/help.html")
+def serveDurakHelp():
+    return render_template("durak/help.html")
+
+# -------------------------------------
 # Taboo room
 @app.route("/taboo/<int:gid>")
 def serveTaboo(gid):
